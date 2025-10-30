@@ -1,5 +1,4 @@
-import logoIcon from '../../assets/icons/icon-logo-white.svg';
-import alramIcon from '../../assets/icons/icon-alram.svg';
+import iconBack from '../../assets/icons/icon-back.svg';
 
 const TopHeader = () => {
     return (
@@ -12,18 +11,8 @@ const TopHeader = () => {
             >
                 {/* 1. 왼쪽 컬럼 (빈 공간) */}
                 <div className="flex justify-start">
-                    <img></img>
-                </div>
-
-                {/* 2. 가운데 컬럼 (로고) */}
-                <div className="flex justify-center">
-                    <img src={logoIcon} alt="비룡한끼 로고" className="h-10" />
-                </div>
-
-                {/* 3. 오른쪽 컬럼 (알림 버튼) */}
-                <div className="flex justify-end">
                     <button className="relative p-1">
-                        <img src={alramIcon} alt="알림" className="h-8" />
+                        <img src={iconBack} alt="뒤로가기" className="h-8" />
 
                         <span
                             className="
@@ -32,6 +21,16 @@ const TopHeader = () => {
             "
                         />
                     </button>
+                </div>
+
+                {/* 2. 가운데 컬럼 (로고) */}
+                <div className="flex justify-center">
+                    <div className="h-10">{}</div>
+                </div>
+
+                {/* 3. 오른쪽 컬럼 (빈 공간)*/}
+                <div className="flex justify-end">
+                    <img></img>
                 </div>
             </header>
         </>

@@ -9,18 +9,18 @@ import { NavLink } from 'react-router-dom';
 //    CRA(Create React App)에서는 import { ReactComponent as HomeIcon } ... 처럼 씁니다.
 //    여기서는 간단하게 <img> 태그를 쓸 것이므로, 파일 경로만 import 합니다.
 
-import homeIcon from '../../assets/icons/icon-home.svg';
-import homeActiveIcon from '../../assets/icons/icon-home.svg';
-import menuIcon from '../../assets/icons/icon-menu.svg';
-import menuActiveIcon from '../../assets/icons/icon-menu.svg';
-import reviewIcon from '../../assets/icons/icon-review.svg';
-import reviewActiveIcon from '../../assets/icons/icon-review.svg';
-import myIcon from '../../assets/icons/icon-my.svg';
-import myActiveIcon from '../../assets/icons/icon-my.svg';
+import homeIcon from '../../assets/icons/icon-home-gray.svg';
+import homeActiveIcon from '../../assets/icons/icon-home-blue.svg';
+import menuIcon from '../../assets/icons/icon-menu-gray.svg';
+import menuActiveIcon from '../../assets/icons/icon-menu-blue.svg';
+import reviewIcon from '../../assets/icons/icon-review-gray.svg';
+import reviewActiveIcon from '../../assets/icons/icon-review-blue.svg';
+import myIcon from '../../assets/icons/icon-user-gray.svg';
+import myActiveIcon from '../../assets/icons/icon-user-blue.svg';
 
 // 각 탭의 정보를 배열로 관리합니다 (활성/비활성 아이콘 경로 포함)
 const navLinks = [
-    { path: '/', label: '홈', icon: homeIcon, activeIcon: homeActiveIcon },
+    { path: '/home', label: '홈', icon: homeIcon, activeIcon: homeActiveIcon },
     {
         path: '/menu',
         label: '메뉴',
