@@ -4,7 +4,6 @@ import logoBlue from '../assets/icons/icon-logo-blue.svg';
 import inhaLogoBg from '../assets/icons/icon-inhauniv-logo-square.svg';
 
 // 1. 스플래시 스크린 컴포넌트 (파란 화면)
-// (가독성을 위해 별도 컴포넌트로 분리)
 const SplashScreen = ({ isFading }: { isFading: boolean }) => (
     <div
         className={`
