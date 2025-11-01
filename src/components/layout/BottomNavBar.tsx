@@ -1,5 +1,3 @@
-// src/components/layout/BottomNavBar.tsx
-
 import { NavLink } from 'react-router-dom';
 
 import homeIcon from '../../assets/icons/icon-home-gray.svg';
