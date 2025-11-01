@@ -1,13 +1,13 @@
-import TopHeaderSecond from '../components/layout/TopHeaderSecond';
 // src/pages/PurchasePage.tsx
-
-import { useState } from 'react';
+import TopHeaderSecond from '../components/layout/TopHeaderSecond';
 import MenuItemCard from '../components/menu/MenuItemCard';
 import PurchaseSummary from '../components/menu/PurchaseSummary';
-import { Menu } from '../types/menu'; // 1. 방금 만든 Menu 타입을 import!
+import type { Menu } from '../types/menu';
+import { useCartStore } from '../store/useCartStore';
 
-// 2. 새 타입에 맞춘 임시 데이터 (UUID는 간단히 문자열로)
+// 메뉴 더미 데이터
 const DUMMY_MENU_LIST: Menu[] = [
+    // --- 중식 ---
     {
         id: 'uuid-m1',
         restaurant_id: 'r1',
@@ -24,7 +24,7 @@ const DUMMY_MENU_LIST: Menu[] = [
         id: 'uuid-m2',
         restaurant_id: 'r1',
         name: '원플레이트',
-        ingredients: '해물빠에야볶음밥, 쌀밥, 쁘띠고구마롤, 단무지, 배추김치',
+        ingredients: '해물빠에야볶음밥, 쌀피고구마롤, 단무지, 배추김치',
         price: 5800,
         is_available: true,
         average_rating: 4.2,
@@ -32,40 +32,112 @@ const DUMMY_MENU_LIST: Menu[] = [
         created_at: '2025-10-10T11:00:00Z',
         updated_at: '2025-10-10T11:00:00Z',
     },
-    // ... (Noodle 등)
+    {
+        id: 'uuid-m3',
+        restaurant_id: 'r1',
+        name: 'Noodle',
+        ingredients: '김밥볶음밥&떡볶이, 왕김말이튀김, 단무지, 배추김치',
+        price: 5500,
+        is_available: true,
+        average_rating: 4.0,
+        review_count: 40,
+        created_at: '2025-10-10T11:00:00Z',
+        updated_at: '2025-10-10T11:00:00Z',
+    },
+    {
+        id: 'uuid-m4',
+        restaurant_id: 'r1',
+        name: '테이크아웃',
+        ingredients: '두부면샐러드',
+        price: 6800,
+        is_available: true,
+        average_rating: 4.8,
+        review_count: 30,
+        created_at: '2025-10-10T11:00:00Z',
+        updated_at: '2025-10-10T11:00:00Z',
+    },
+    // 셀프 라면
+    {
+        id: 'uuid-r1',
+        restaurant_id: 'r2',
+        name: '신라면',
+        ingredients: '',
+        price: 2500,
+        is_available: true,
+        average_rating: 4.9,
+        review_count: 150,
+        created_at: '2025-10-10T11:00:00Z',
+        updated_at: '2025-10-10T11:00:00Z',
+    },
+    {
+        id: 'uuid-r2',
+        restaurant_id: 'r2',
+        name: '진라면',
+        ingredients: '',
+        price: 2500,
+        is_available: true,
+        average_rating: 4.8,
+        review_count: 120,
+        created_at: '2025-10-10T11:00:00Z',
+        updated_at: '2025-10-10T11:00:00Z',
+    },
+    {
+        id: 'uuid-r3',
+        restaurant_id: 'r2',
+        name: '삼양라면',
+        ingredients: '',
+        price: 2500,
+        is_available: true,
+        average_rating: 4.7,
+        review_count: 90,
+        created_at: '2025-10-10T11:00:00Z',
+        updated_at: '2025-10-10T11:00:00Z',
+    },
 ];
 
 const PurchasePage = () => {
-    const [selectedMenuId, setSelectedMenuId] = useState<string | null>(null);
-
-    const handleMenuSelect = (menuId: string) => {
-        setSelectedMenuId((prevId) => (prevId === menuId ? null : menuId));
-    };
-
-    // 3. selectedMenu의 타입이 'Menu | undefined'가 됩니다.
-    const selectedMenu = DUMMY_MENU_LIST.find(
-        (menu) => menu.id === selectedMenuId
-    );
+    // Zustand 스토어에서 '카트 아이템'과 '아이템 추가 함수'를 가져옵니다.
+    const { addItem } = useCartStore();
 
     return (
         <>
             <TopHeaderSecond title="식권 예매하기" />
 
-            <main className="pt-16 pb-32 px-4 space-y-4 bg-gray-100 min-h-screen">
-                {/* ... (메뉴 선택 타이틀) ... */}
+            <main className="pt-12 pb-76 px-8 space-y-4 bg-[#E6EDF3] min-h-screen">
+                <div className="text-2xl font-bold mb-2">메뉴 선택</div>
+                <div className="text-lg font-medium mb-2">
+                    <span className="font-bold">중식</span> 11:00 ~ 14:00
+                </div>
 
-                {DUMMY_MENU_LIST.map((menu) => (
-                    <MenuItemCard
-                        key={menu.id}
-                        // 4. props로 menu 객체 통째로 넘겨주기 (더 깔끔!)
-                        menu={menu}
-                        isSelected={selectedMenuId === menu.id}
-                        onClick={() => handleMenuSelect(menu.id)}
-                    />
-                ))}
+                {DUMMY_MENU_LIST.map((menu) => {
+                    if (menu.restaurant_id === 'r1') {
+                        return (
+                            <MenuItemCard
+                                key={menu.id}
+                                menu={menu}
+                                onClick={() => addItem(menu)}
+                            />
+                        );
+                    }
+                })}
+
+                <div className="text-lg font-medium mb-2">
+                    <span className="font-bold">셀프라면</span> 11:00 ~ 18:30
+                </div>
+                {DUMMY_MENU_LIST.map((menu) => {
+                    if (menu.restaurant_id === 'r2') {
+                        return (
+                            <MenuItemCard
+                                key={menu.id}
+                                menu={menu}
+                                onClick={() => addItem(menu)}
+                            />
+                        );
+                    }
+                })}
             </main>
 
-            {selectedMenu && <PurchaseSummary menu={selectedMenu} />}
+            {<PurchaseSummary />}
         </>
     );
 };
