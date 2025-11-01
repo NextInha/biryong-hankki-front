@@ -7,7 +7,7 @@ const TopHeader = () => {
             <header
                 className="
            sticky top-0 w-full h-20 p-2 bg-[#0066B3]
-        grid grid-cols-3 items-center content-end
+        grid grid-cols-3 items-center content-end z-10
       "
             >
                 {/* 1. 왼쪽 컬럼 (빈 공간) */}

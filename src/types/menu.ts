@@ -10,9 +10,3 @@ export interface Menu {
     created_at: string; // TIMESTAMP는 string (ISO 8601 형식)
     updated_at: string;
 }
-
-export interface Ramen {
-    id: string;
-    name: string;
-    price: number;
-}

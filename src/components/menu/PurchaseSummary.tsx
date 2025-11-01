@@ -16,7 +16,7 @@ const PurchaseSummary = () => {
     // 3. "구매하기" 버튼 클릭 시
     const handlePurchase = () => {
         console.log('주문할 아이템:', items);
-        // TODO: 여기에 API 호출(createOrder) 로직을 붙일 거예요.
+        // 추후 API 연동 로직
         alert('API 연동 준비 완료!');
     };
 
@@ -45,7 +45,7 @@ const PurchaseSummary = () => {
                         </button>
 
                         {/* 메뉴 이름, 가격 */}
-                        <div className="flex-grow">
+                        <div className="grow">
                             <p className="font-semibold">{item.name}</p>
                             <p className="text-sm text-gray-500">
                                 {item.price.toLocaleString()}원
@@ -58,7 +58,7 @@ const PurchaseSummary = () => {
                                 onClick={() => updateQuantity(item.id, -1)}
                                 className=" bg-gray-100 flex items-center justify-center  
       w-6 h-6 text-gray-500
-     rounded-4xl transition-all duration-150 ease-in-out
+     rounded-4xl transition-all duration-150 ease-in-out 
         
         active:scale-[0.80] active:opacity-60"
                             >

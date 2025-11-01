@@ -103,7 +103,7 @@ const PurchasePage = () => {
         <>
             <TopHeaderSecond title="식권 예매하기" />
 
-            <main className="pt-12 pb-76 px-8 space-y-4 bg-[#E6EDF3] min-h-screen">
+            <main className="pt-8 pb-76 px-8 space-y-4 bg-[#E6EDF3] min-h-screen">
                 <div className="text-2xl font-bold mb-2">메뉴 선택</div>
                 <div className="text-lg font-medium mb-2">
                     <span className="font-bold">중식</span> 11:00 ~ 14:00

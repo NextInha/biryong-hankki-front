@@ -15,19 +15,18 @@ const TopHeaderSecond = ({ title }: TopHeaderSecondProps) => {
         <>
             <header
                 className="
-           sticky top-0 w-full h-20 p-2 bg-[#0066B3]
-        grid grid-cols-3 items-center content-end
+           sticky top-0 w-full h-20 p-2 px-4 bg-[#0066B3] 
+        grid grid-cols-[auto_1fr_auto] items-center content-end
       "
             >
                 {/* 1. 왼쪽 컬럼 (뒤로가기) */}
                 <div className="flex justify-start">
-                    <button onClick={handleBackClick} className="p-2">
-                        <img
-                            src={iconBack}
-                            alt="뒤로가기"
-                            className="w-6 h-6 rotate-180"
-                        />
-                    </button>
+                    <img
+                        onClick={handleBackClick}
+                        src={iconBack}
+                        alt="뒤로가기"
+                        className="w-6 h-6 rotate-180"
+                    />
                 </div>
 
                 {/* 2. 가운데 컬럼 (title) */}
@@ -37,7 +36,7 @@ const TopHeaderSecond = ({ title }: TopHeaderSecondProps) => {
 
                 {/* 3. 오른쪽 컬럼 (빈 공간)*/}
                 <div className="flex justify-end">
-                    <img></img>
+                    <div className="w-6 h-6"></div>
                 </div>
             </header>
         </>
