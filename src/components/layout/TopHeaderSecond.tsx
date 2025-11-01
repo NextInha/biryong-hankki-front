@@ -1,10 +1,16 @@
 import iconBack from '../../assets/icons/icon-back.svg';
-
+import { useNavigate } from 'react-router-dom';
 type TopHeaderSecondProps = {
     title: string;
 };
 
 const TopHeaderSecond = ({ title }: TopHeaderSecondProps) => {
+    const navigate = useNavigate();
+
+    // 뒤로가기 버튼을 클릭하면 실행될 함수
+    const handleBackClick = () => {
+        navigate(-1); // -1은 "바로 이전 페이지로 가기"
+    };
     return (
         <>
             <header
@@ -15,20 +21,18 @@ const TopHeaderSecond = ({ title }: TopHeaderSecondProps) => {
             >
                 {/* 1. 왼쪽 컬럼 (뒤로가기) */}
                 <div className="flex justify-start">
-                    <button className="relative p-1">
+                    <button onClick={handleBackClick} className="p-2">
                         <img
                             src={iconBack}
                             alt="뒤로가기"
-                            className="h-6 rotate-180"
+                            className="w-6 h-6 rotate-180"
                         />
                     </button>
                 </div>
 
                 {/* 2. 가운데 컬럼 (title) */}
                 <div className="flex justify-center">
-                    <div className="text-white text-base font-bold">
-                        {title}
-                    </div>
+                    <div className="text-white text-xl font-bold">{title}</div>
                 </div>
 
                 {/* 3. 오른쪽 컬럼 (빈 공간)*/}
