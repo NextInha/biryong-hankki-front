@@ -19,6 +19,7 @@ function App() {
                     <Route path="/review" element={<ReviewPage />} />
                     <Route path="/my" element={<MyPage />} />
                 </Route>
+
                 <Route path="/purchase" element={<PurchasePage />} />
             </Routes>
         </>

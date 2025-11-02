@@ -30,16 +30,13 @@ const DUMMY_TICKET: Ticket = {
 
 const HomePage = () => {
     //식권 상태 (임시)
-    const [activeTicket, setActiveTicket] = useState<Ticket | null>(
-        DUMMY_TICKET
-    );
+    const [activeTicket, setActiveTicket] = useState<Ticket | null>(null);
 
     // (가정) 유저 정보
     const userInfo = {
         name: '김인하',
-        // 식권 유무에 따라 '가짜' 장수 표시
-        ticketCount: activeTicket ? 218 : 45,
     };
+    const ticketCount = activeTicket ? 256 : 0;
 
     return (
         <>
@@ -47,7 +44,7 @@ const HomePage = () => {
 
             <div
                 className="
-          fixed top-20 left-0 right-0 w-full max-w-md mx-auto
+          fixed top-20 left-0 right-0 container mx-auto
           flex items-center gap-2 p-3
           bg-white shadow-sm z-10
         "
@@ -58,12 +55,12 @@ const HomePage = () => {
                 </span>
             </div>
 
-            <main className="pt-16 pb-32 px-6 bg-[#E6EDF3] min-h-screen">
+            <main className="pt-16  px-6 bg-[#E6EDF3] min-h-screen">
                 {/* 유저 정보 & 식사 상태 */}
                 <div className="flex justify-between items-center mb-6 z-15">
                     <UserInfo
                         name={userInfo.name}
-                        ticketCount={userInfo.ticketCount} // 가짜 장수 전달
+                        ticketCount={ticketCount} // 가짜 장수 전달
                     />
                     <MealStatus />
                 </div>

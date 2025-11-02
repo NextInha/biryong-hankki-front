@@ -3,7 +3,7 @@
 import iconShare from '../../assets/icons/icon-share.svg';
 
 // 1. HomePage에서 정의한 '임시' Ticket 인터페이스
-// (나중에 API 연동 시 이 부분만 '진짜' 타입으로 바꿀 거예요)
+// 나중에 API 연동하면 타입 바꾸기
 interface Ticket {
     id: string;
     menuName: string;
@@ -22,12 +22,13 @@ const MyTicketCard = ({ ticket }: MyTicketCardProps) => {
         // 파란색 배경의 카드
         <div
             className="
-      bg-[#0066B3] text-white rounded-2xl shadow-lg
-      flex flex-col p-4 w-full
+      bg-[#0066B3] text-white rounded-3xl shadow-lg
+      flex flex-col pt-4 w-full
     "
         >
             {/* 1. 헤더: 메뉴명 + 공유 버튼 */}
             <div className="flex justify-between items-center mb-4">
+                <div className="w-6 h-6"></div>
                 <h3 className="text-2xl font-bold">{ticket.menuName}</h3>
                 <button className="p-1">
                     <img src={iconShare} className="w-6 h-6"></img>
@@ -35,16 +36,17 @@ const MyTicketCard = ({ ticket }: MyTicketCardProps) => {
             </div>
 
             {/* 2. Body: 하얀색 내부 카드 */}
-            <div className="bg-white text-gray-900 rounded-xl p-6 text-center shadow-inner">
+            <div className="bg-white text-gray-900 rounded-3xl p-4 text-center shadow-inner">
                 {/* 식당 이름, 식사완료 버튼 */}
                 <div className="flex justify-between items-center mb-1">
+                    <div className="px-9 py-2"> </div>
                     <span className="font-semibold">
                         {ticket.restaurantName}
                     </span>
                     <button
                         className="
             bg-white text-[#0066B3] text-sm font-semibold
-            border border-[#0066B3] shadow-2xl rounded-full px-4 py-1
+            border border-[#0066B3] shadow-2xl rounded-full px-3 py-2
             hover:bg-blue-50
           "
                     >

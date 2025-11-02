@@ -7,7 +7,7 @@ import inhaLogoBg from '../assets/icons/icon-inhauniv-logo-square.svg';
 const SplashScreen = ({ isFading }: { isFading: boolean }) => (
     <div
         className={`
-      flex min-h-screen w-full bg-blue-600 
+      flex min-h-screen w-full bg-[#0066B3]
       items-center justify-center p-12
       transition-opacity duration-500
       ${isFading ? 'opacity-0' : 'opacity-100'} 
