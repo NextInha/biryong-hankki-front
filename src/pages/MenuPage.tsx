@@ -2,21 +2,20 @@
 
 import { useState } from 'react';
 import TopHeaderSecond from '../components/layout/TopHeaderSecond';
-import DateNavigator from '../components/menu/DateNavigator'; // (2번 파일)
-import DailyMenuCard from '../components/menu/DailyMenuCard'; // (3번 파일)
-import CalendarModal from '../components/menu/CalendarModal'; // (4번 파일)
+import DateNavigator from '../components/menu/DataNavigator';
+import CalendarModal from '../components/menu/CalendarModal';
+import MenuEntryCard from '../components/menu/DailyEntryCard';
 
-// (가정) 조식/중식/석식 아이콘 이미지를 import
-import iconBreakfast from '../assets/images/icon-breakfast.svg';
-import iconLunch from '../assets/images/icon-lunch.svg';
-// import iconDinner from '../assets/images/icon-dinner.svg';
+import iconBreakfast from '../assets/icons/icon-breakfast.svg';
+import iconLunch from '../assets/icons/icon-lunch.svg';
+import iconDinner from '../assets/icons/icon-dinner.svg';
 
-// --- (임시) 메뉴 데이터 (디자인 시안 기반) ---
+// --- (임시) 메뉴 데이터 (DUMMY_MENU_DATA) ---
 const DUMMY_MENU_DATA = {
     breakfast: {
         mealType: '조식',
         time: '08:00 ~ 09:00',
-        icon: iconBreakfast, // 가지고 계신 아이콘 경로
+        icon: iconBreakfast,
         items: [
             {
                 id: 'b1',
@@ -30,7 +29,7 @@ const DUMMY_MENU_DATA = {
     lunch: {
         mealType: '중식',
         time: '11:00 ~ 14:00',
-        icon: iconLunch, // 가지고 계신 아이콘 경로
+        icon: iconLunch,
         items: [
             {
                 id: 'l1',
@@ -60,43 +59,46 @@ const DUMMY_MENU_DATA = {
             },
         ],
     },
-    // (필요시 'dinner' 석식 데이터도 추가)
+    dinner: {
+        mealType: '석식',
+        time: '17:00 ~ 18:30',
+        icon: iconDinner,
+        items: [
+            {
+                id: 'd1',
+                name: '석식',
+                price: 5500,
+                ingredients: '닭개장, 쌀밥, 동그랑땡야채볶음, 지마구, 맛김치',
+            },
+        ],
+    },
 };
-// --- (데이터 끝) ---
 
 const MenuPage = () => {
-    // 1. [핵심 상태 1] 현재 선택된 날짜 (기본값: 오늘)
+    // --- (상태 관리 로직: useState, handleDateChange, handleDateSelect) ---
     const [selectedDate, setSelectedDate] = useState(new Date());
-
-    // 2. [핵심 상태 2] 달력 모달이 열렸는지 여부
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    // 3. 날짜 변경 함수 (DateNavigator의 < > 버튼용)
     const handleDateChange = (amount: number) => {
         setSelectedDate((prevDate) => {
             const newDate = new Date(prevDate);
             newDate.setDate(prevDate.getDate() + amount);
             return newDate;
         });
-        // (나중에 여기에 API로 newDate의 메뉴를 불러오는 로직 추가)
     };
 
-    // 4. 달력에서 날짜를 '선택'했을 때
     const handleDateSelect = (date: Date | undefined) => {
         if (date) {
             setSelectedDate(date);
-            // (나중에 여기에 API로 date의 메뉴를 불러오는 로직 추가)
         }
-        setIsModalOpen(false); // 모달 닫기
+        setIsModalOpen(false);
     };
 
     return (
         <>
             <TopHeaderSecond title="메뉴" />
 
-            {/* 5. Layout.tsx와 동일하게 flex-col h-screen 구조로 잡기 */}
             <div className="flex flex-col h-screen bg-[#F0F4F8]">
-                {/* 6. 날짜 탐색기 (헤더처럼 상단에 고정) */}
                 <DateNavigator
                     currentDate={selectedDate}
                     onPrevClick={() => handleDateChange(-1)}
@@ -104,34 +106,89 @@ const MenuPage = () => {
                     onCalendarClick={() => setIsModalOpen(true)}
                 />
 
-                {/* 7. 메인 콘텐츠 (헤더 + 날짜탐색기 높이만큼 패딩)
-            pt-20 (h-20 헤더) + pt-12 (h-12 탐색기) = pt-32
-        */}
                 <main
                     className="
-          pt-32 pb-20 px-4 space-y-4 grow overflow-y-auto
+          pt-20 pb-20 px-6 space-y-8 grow overflow-y-auto
           scrollbar-width-none [&::-webkit-scrollbar]:hidden
         "
                 >
-                    {/* 조식 카드 */}
-                    <DailyMenuCard
-                        mealType={DUMMY_MENU_DATA.breakfast.mealType}
-                        time={DUMMY_MENU_DATA.breakfast.time}
-                        icon={DUMMY_MENU_DATA.breakfast.icon}
-                        items={DUMMY_MENU_DATA.breakfast.items}
-                    />
+                    {/* --- 조식 섹션 --- */}
 
-                    {/* 중식 카드 */}
-                    <DailyMenuCard
-                        mealType={DUMMY_MENU_DATA.lunch.mealType}
-                        time={DUMMY_MENU_DATA.lunch.time}
-                        icon={DUMMY_MENU_DATA.lunch.icon}
-                        items={DUMMY_MENU_DATA.lunch.items}
-                    />
+                    <section>
+                        {/* 1. 조식 헤더: 페이지가 직접 렌더링 */}
+                        <div className="flex items-center gap-2 mb-3 px-2">
+                            <img
+                                src={DUMMY_MENU_DATA.breakfast.icon}
+                                alt="조식"
+                                className="w-6 h-6"
+                            />
+                            <h3 className="text-lg font-bold text-gray-900">
+                                {DUMMY_MENU_DATA.breakfast.mealType}
+                            </h3>
+                            <span className="text-sm text-gray-500">
+                                {DUMMY_MENU_DATA.breakfast.time}
+                            </span>
+                        </div>
+
+                        {/* 2. 조식 아이템 맵: MenuEntryCard 사용 */}
+                        <div className="space-y-3">
+                            {DUMMY_MENU_DATA.breakfast.items.map((item) => (
+                                <MenuEntryCard key={item.id} item={item} />
+                            ))}
+                        </div>
+                    </section>
+
+                    {/* --- 중식 섹션 --- */}
+                    <section>
+                        {/* 1. 중식 헤더: 페이지가 직접 렌더링 */}
+                        <div className="flex items-center gap-2 mb-3 px-2">
+                            <img
+                                src={DUMMY_MENU_DATA.lunch.icon}
+                                alt="중식"
+                                className="w-6 h-6"
+                            />
+                            <h3 className="text-lg font-bold text-gray-900">
+                                {DUMMY_MENU_DATA.lunch.mealType}
+                            </h3>
+                            <span className="text-sm text-gray-500">
+                                {DUMMY_MENU_DATA.lunch.time}
+                            </span>
+                        </div>
+
+                        {/* 2. 중식 아이템 맵: MenuEntryCard 사용 */}
+                        <div className="space-y-3">
+                            {DUMMY_MENU_DATA.lunch.items.map((item) => (
+                                <MenuEntryCard key={item.id} item={item} />
+                            ))}
+                        </div>
+                    </section>
+                    <section>
+                        {/* 1. 석식 헤더: 페이지가 직접 렌더링 */}
+                        <div className="flex items-center gap-2 mb-3 px-2">
+                            <img
+                                src={DUMMY_MENU_DATA.dinner.icon}
+                                alt="석식"
+                                className="w-6 h-6"
+                            />
+                            <h3 className="text-lg font-bold text-gray-900">
+                                {DUMMY_MENU_DATA.dinner.mealType}
+                            </h3>
+                            <span className="text-sm text-gray-500">
+                                {DUMMY_MENU_DATA.dinner.time}
+                            </span>
+                        </div>
+
+                        {/* 2. 석식 아이템 맵: MenuEntryCard 사용 */}
+                        <div className="space-y-3">
+                            {DUMMY_MENU_DATA.dinner.items.map((item) => (
+                                <MenuEntryCard key={item.id} item={item} />
+                            ))}
+                        </div>
+                    </section>
                 </main>
             </div>
 
-            {/* 8. 달력 모달 (isModalOpen이 true일 때만 보임) */}
+            {/* 달력 모달 (변경 없음) */}
             <CalendarModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}

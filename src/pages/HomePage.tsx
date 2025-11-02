@@ -30,7 +30,9 @@ const DUMMY_TICKET: Ticket = {
 
 const HomePage = () => {
     //식권 상태 (임시)
-    const [activeTicket, setActiveTicket] = useState<Ticket | null>(null);
+    const [activeTicket, setActiveTicket] = useState<Ticket | null>(
+        DUMMY_TICKET
+    );
 
     // (가정) 유저 정보
     const userInfo = {

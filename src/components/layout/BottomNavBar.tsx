@@ -29,7 +29,7 @@ const navLinks = [
 
 const BottomNavBar = () => {
     return (
-        <nav className="w-full h-16 bg-white shadow-[0_-4px_6px_-1px_rgb(0,0,0,0.1),0_-2px_4px_-2px_rgb(0,0,0,0.1)] flex justify-around items-center sticky bottom-0">
+        <nav className="w-full h-16 py-2 bg-white shadow-[0_-4px_6px_-1px_rgb(0,0,0,0.1),0_-2px_4px_-2px_rgb(0,0,0,0.1)] flex justify-around items-center sticky bottom-0">
             {navLinks.map((link) => (
                 <NavLink to={link.path} key={link.path} end={link.path === '/'}>
                     {({ isActive }) => (
@@ -38,12 +38,12 @@ const BottomNavBar = () => {
                                 isActive ? 'text-blue-600' : 'text-gray-500' // 텍스트 색상 변경
                             } hover:text-blue-600 transition-colors`}
                         >
-                            <div className="-mb-4 -mt-4">
+                            <div className="mb-1">
                                 <img
                                     // isActive 상태에 따라 아이콘 src를 동적으로 변경합니다.
                                     src={isActive ? link.activeIcon : link.icon}
                                     alt={link.label}
-                                    className="w-16 h-16"
+                                    className="w-6 h-6"
                                 />
                             </div>
                             <span className="text-xs font-medium">
