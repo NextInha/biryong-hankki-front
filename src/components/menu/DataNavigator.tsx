@@ -28,7 +28,7 @@ const DateNavigator = ({
     return (
         <div
             className="
-        fixed top-20 right-0 w-full max-w-md mx-auto
+        fixed top-20 right-0 w-full container mx-auto
         flex justify-between items-center
         h-12 px-6 bg-[#E6EDF3] z-10
         shadow-xs

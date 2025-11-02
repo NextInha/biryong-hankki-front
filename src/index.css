@@ -1,1 +1,28 @@
+/* src/index.css (Tailwind v4 전용) */
 @import 'tailwindcss';
+
+@theme {
+    --color-primary: #0066b3;
+
+    --animation-slideUp: slideUp 0.5s ease-out;
+
+    @keyframes slideUp {
+        from {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+}
+
+body {
+    /* Firefox */
+    scrollbar-width: none;
+    /* Chrome, Safari, Edge */
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}

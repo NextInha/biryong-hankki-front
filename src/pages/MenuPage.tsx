@@ -113,9 +113,7 @@ const MenuPage = () => {
         "
                 >
                     {/* --- 조식 섹션 --- */}
-
                     <section>
-                        {/* 1. 조식 헤더: 페이지가 직접 렌더링 */}
                         <div className="flex items-center gap-2 mb-3 px-2">
                             <img
                                 src={DUMMY_MENU_DATA.breakfast.icon}
@@ -130,7 +128,6 @@ const MenuPage = () => {
                             </span>
                         </div>
 
-                        {/* 2. 조식 아이템 맵: MenuEntryCard 사용 */}
                         <div className="space-y-3">
                             {DUMMY_MENU_DATA.breakfast.items.map((item) => (
                                 <MenuEntryCard key={item.id} item={item} />
@@ -140,7 +137,6 @@ const MenuPage = () => {
 
                     {/* --- 중식 섹션 --- */}
                     <section>
-                        {/* 1. 중식 헤더: 페이지가 직접 렌더링 */}
                         <div className="flex items-center gap-2 mb-3 px-2">
                             <img
                                 src={DUMMY_MENU_DATA.lunch.icon}
@@ -155,15 +151,14 @@ const MenuPage = () => {
                             </span>
                         </div>
 
-                        {/* 2. 중식 아이템 맵: MenuEntryCard 사용 */}
                         <div className="space-y-3">
                             {DUMMY_MENU_DATA.lunch.items.map((item) => (
                                 <MenuEntryCard key={item.id} item={item} />
                             ))}
                         </div>
                     </section>
+                    {/* 석식 */}
                     <section>
-                        {/* 1. 석식 헤더: 페이지가 직접 렌더링 */}
                         <div className="flex items-center gap-2 mb-3 px-2">
                             <img
                                 src={DUMMY_MENU_DATA.dinner.icon}
@@ -178,7 +173,6 @@ const MenuPage = () => {
                             </span>
                         </div>
 
-                        {/* 2. 석식 아이템 맵: MenuEntryCard 사용 */}
                         <div className="space-y-3">
                             {DUMMY_MENU_DATA.dinner.items.map((item) => (
                                 <MenuEntryCard key={item.id} item={item} />
