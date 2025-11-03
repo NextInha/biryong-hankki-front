@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Scanner } from '@yudiel/react-qr-scanner';
-import { HiXMark } from 'react-icons/hi2';
+import iconX from '../assets/icons/icon-x.svg';
+import iconPlus from '../assets/icons/icon-plus.svg';
 //import { api } from '../api';
 //import { AxiosError } from 'axios';
 
@@ -85,17 +86,20 @@ const QrScannerPage = () => {
             />
 
             <div className="absolute top-0 left-0 right-0 p-5 flex items-center z-10">
-                <button onClick={() => navigate(-1)} className="text-white">
-                    <HiXMark className="w-8 h-8" />
+                <button
+                    onClick={() => console.log('clicked')}
+                    className="text-white"
+                >
+                    <img src={iconX} alt="back" className="w-4 h-4"></img>
                 </button>
-                <h1 className="text-white text-xl font-bold text-center flex-1 -ml-8">
+                <h1 className="text-white text-xl font-medium text-center flex-1 -ml-8">
                     코드스캔
                 </h1>
             </div>
+
             <div className="absolute inset-0 flex items-center justify-center z-0">
-                <div className="w-16 h-16 opacity-50">
-                    <div className="w-16 h-1/2 border-t-4 border-l-4 border-r-4 border-white rounded-t-lg"></div>
-                    <div className="w-16 h-1/2 border-b-4 border-l-4 border-r-4 border-white rounded-b-lg"></div>
+                <div className="w-12 h-12">
+                    <img src={iconPlus} alt="plus" className="w-full h-full" />
                 </div>
             </div>
 
