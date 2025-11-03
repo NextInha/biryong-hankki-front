@@ -28,7 +28,7 @@ const FilterModal = ({
             <div
                 onClick={(e) => e.stopPropagation()}
                 className="
-          absolute top-44 right-4 
+          absolute top-32 right-4 
           bg-white rounded-lg shadow-lg border border-gray-100
           w-36 py-2 z-50
         "
@@ -43,7 +43,7 @@ const FilterModal = ({
                                     'w-full text-left px-4 py-2 text-sm',
                                     {
                                         // 선택된 항목은 파란색/굵게
-                                        'text-blue-600 font-bold':
+                                        'text-primary font-bold':
                                             option === selectedOption,
                                         // 선택 안 된 항목
                                         'text-gray-700 hover:bg-gray-50':

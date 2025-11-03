@@ -15,10 +15,10 @@ interface CartState {
 
 // 2. 'create' 함수를 사용해 스토어를 만듭니다.
 export const useCartStore = create<CartState>((set) => ({
-    // --- '상태' (초기 데이터) ---
+    // '상태' (초기 데이터)
     items: [],
 
-    // --- '행동' (상태를 변경하는 함수들) ---
+    // '행동' (상태를 변경하는 함수들)
 
     // 1) 아이템 추가
     addItem: (menu) =>

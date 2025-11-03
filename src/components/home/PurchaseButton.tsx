@@ -8,7 +8,7 @@ const PurchaseButton = () => {
 
     const handleClick = () => {
         // "QR을 누르면 주문하기 창으로 넘어간다"는 요청 구현
-        navigate('/purchase');
+        navigate('/qr-scanner');
     };
 
     return (

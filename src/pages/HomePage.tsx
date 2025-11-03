@@ -59,7 +59,7 @@ const HomePage = () => {
 
             <main className="pt-16  px-6 bg-[#E6EDF3] min-h-screen">
                 {/* 유저 정보 & 식사 상태 */}
-                <div className="flex justify-between items-center mb-6 z-15">
+                <div className="flex justify-between items-center mb-4 z-15">
                     <UserInfo
                         name={userInfo.name}
                         ticketCount={ticketCount} // 가짜 장수 전달

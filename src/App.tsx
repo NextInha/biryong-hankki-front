@@ -6,6 +6,7 @@ import ReviewPage from './pages/ReviewPage';
 import PurchasePage from './pages/PurchasePage';
 import MyPage from './pages/MyPage';
 import LoginPage from './pages/LoginPage';
+import QrScannerPage from './pages/QrScannerPage.tsx';
 
 function App() {
     return (
@@ -21,6 +22,7 @@ function App() {
                 </Route>
 
                 <Route path="/purchase" element={<PurchasePage />} />
+                <Route path="/qr-scanner" element={<QrScannerPage />} />
             </Routes>
         </>
     );

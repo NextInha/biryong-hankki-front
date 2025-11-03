@@ -10,18 +10,18 @@ interface UserInfoProps {
 
 const UserInfo = ({ name, ticketCount }: UserInfoProps) => {
     return (
-        <div className="flex  flex-col ">
-            <div className="flex items-center justify-center">
+        <div className="flex  flex-col ml-4">
+            <div className="flex items-center ">
                 <img
                     src={treeIcon}
                     alt="식권 갯수 아이콘"
-                    className="w-14 h-14"
+                    className="w-10 h-10 -mb-2 -ml-4"
                 />
                 {/* 식권 카운트 파란색 풍선 */}
                 <div
                     className="
-          relative w-fit bg-[#0066B3] text-white text-xs font-bold
-          px-2.5 py-0.5 rounded-full shadow-md mb-1
+           bg-[#0066B3] text-white text-xs font-semibold
+          px-2.5 py-1 rounded-full -mt-8
         "
                 >
                     {ticketCount}장
