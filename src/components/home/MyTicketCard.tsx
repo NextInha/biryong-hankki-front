@@ -23,11 +23,11 @@ const MyTicketCard = ({ ticket }: MyTicketCardProps) => {
         <div
             className="
       bg-[#0066B3] text-white rounded-3xl shadow-lg
-      flex flex-col pt-4 w-full
+      flex flex-col pt-4  w-full
     "
         >
             {/* 1. 헤더: 메뉴명 + 공유 버튼 */}
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex justify-between items-center mb-4 px-2">
                 <div className="w-6 h-6"></div>
                 <h3 className="text-2xl font-bold">{ticket.menuName}</h3>
                 <button className="p-1">

@@ -108,7 +108,7 @@ const MenuPage = () => {
 
                 <main
                     className="
-          pt-20 pb-20 px-6 space-y-8 grow overflow-y-auto
+          pt-16 pb-20 px-6 space-y-8 grow overflow-y-auto
           scrollbar-width-none [&::-webkit-scrollbar]:hidden
         "
                 >

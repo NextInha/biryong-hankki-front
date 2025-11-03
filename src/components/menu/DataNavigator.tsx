@@ -30,7 +30,7 @@ const DateNavigator = ({
             className="
         fixed top-20 right-0 w-full container mx-auto
         flex justify-between items-center
-        h-12 px-6 bg-[#E6EDF3] z-10
+        h-12 px-6 bg-white z-10
         shadow-xs
         border-b border-gray-200
         left-1/2 -translate-x-1/2 

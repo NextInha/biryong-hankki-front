@@ -4,7 +4,7 @@ import { create } from 'zustand';
 import type { CartItem } from '../types/cart';
 import type { Menu } from '../types/menu';
 
-// 1. 스토어(카트)가 가질 '상태(state)'와 '행동(actions)'의 타입을 정의합니다.
+// 1. 스토어에서 사용할 '상태'와 '행동'의 타입을 정의합니다.
 interface CartState {
     items: CartItem[]; // 카트에 담긴 아이템 배열
     addItem: (menu: Menu) => void; // 아이템 추가
@@ -15,10 +15,10 @@ interface CartState {
 
 // 2. 'create' 함수를 사용해 스토어를 만듭니다.
 export const useCartStore = create<CartState>((set) => ({
-    // --- 3. '상태' (초기 데이터) ---
+    // --- '상태' (초기 데이터) ---
     items: [],
 
-    // --- 4. '행동' (상태를 변경하는 함수들) ---
+    // --- '행동' (상태를 변경하는 함수들) ---
 
     // 1) 아이템 추가
     addItem: (menu) =>
@@ -38,7 +38,7 @@ export const useCartStore = create<CartState>((set) => ({
                     ),
                 };
             } else {
-                // 4-2. 카트에 없으면?
+                // 4-2. 카트에 없으면? -> 새로 추가해서 리턴
                 return { items: [...state.items, { ...menu, quantity: 1 }] };
             }
         }),
