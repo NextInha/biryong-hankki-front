@@ -1,97 +1,69 @@
+// src/pages/LoginPage.tsx
+
 import { useState, useEffect } from 'react';
-import logoWhite from '../assets/icons/icon-logo-white.svg';
-import logoBlue from '../assets/icons/icon-logo-blue.svg';
-import inhaLogoBg from '../assets/icons/icon-inhauniv-logo-square.svg';
+import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../store/useAuthStore';
+import { apiLogin } from '../api/auth';
+import { AxiosError } from 'axios';
 
-// 1. 스플래시 스크린 컴포넌트 (파란 화면)
-const SplashScreen = ({ isFading }: { isFading: boolean }) => (
-    <div
-        className={`
-      flex min-h-screen w-full bg-[#0066B3]
-      items-center justify-center p-12
-      transition-opacity duration-500
-      ${isFading ? 'opacity-0' : 'opacity-100'} 
-    `}
-    >
-        <img src={logoWhite} alt="비룡한끼 로고" className="w-1/2 max-w-xs" />
-    </div>
-);
+import SplashScreen from '../components/auth/SplashScreen';
+import LoginForm from '../components/auth/LoginForm';
 
-// 2. 로그인 폼 컴포넌트 (흰색 화면)
-const LoginForm = () => (
-    <div
-        className="
-      flex min-h-screen w-full flex-col items-center
-      justify-start bg-[#E6EDF3] p-6 relative
-      transition-opacity duration-500 opacity-100 
-    "
-    >
-        {/* 배경 인하대 로고 */}
-        <div className="absolute bottom-0 right-25 w-full z-0 opacity-10 flex items-center justify-center">
-            <img src={inhaLogoBg} alt="" className="w-2/3" />
-        </div>
+// 임시 ApiError interface
+interface ApiError {
+    code: string;
+    message: string;
+}
 
-        <img src={logoBlue} alt="비룡한끼" className="h-24 mx-auto my-12" />
-
-        {/* 로그인 폼 */}
-        <div className="w-full max-w-md z-10">
-            <h1 className="text-xl font-bold text-center mb-6 text-gray-800">
-                로그인
-            </h1>
-
-            <form>
-                <div className="mb-4">
-                    <input
-                        type="text"
-                        placeholder="아이디"
-                        className="w-full p-3 bg-white  rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                </div>
-                <div className="mb-4">
-                    <input
-                        type="password"
-                        placeholder="비밀번호"
-                        className="w-full p-3 bg-white  rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                </div>
-
-                <p className="text-xs text-gray-500 mb-4">
-                    *로그인 아이디는 학교 포털에서 사용하는 학번 또는
-                    사번입니다.
-                </p>
-
-                <div className="flex items-center mb-12 text-sm text-gray-600">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" className="w-4 h-4" />
-                        로그인 상태 유지
-                    </label>
-                </div>
-
-                <button
-                    type="submit"
-                    className="w-full bg-[#0066B3] text-white p-3 rounded-md font-bold hover:bg-blue-700 transition-colors"
-                >
-                    로그인
-                </button>
-            </form>
-        </div>
-    </div>
-);
-
-// --- 3. 메인 LoginPage 컴포넌트 ---
+// 메인 LoginPage 컴포넌트
 const LoginPage = () => {
-    // splash 로딩
-    const [isLoading, setIsLoading] = useState(true);
-    // animation 로딩
+    const navigate = useNavigate();
+    const setAuth = useAuthStore((state) => state.setAuth);
+
+    // 로그인 관련 상태
+    const [studentId, setStudentId] = useState('');
+    const [password, setPassword] = useState('');
+    const [errorMsg, setErrorMsg] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingSplash, setIsLoadingSplash] = useState(true);
     const [isFading, setIsFading] = useState(false);
 
+    // 폼 제출 핸들러 (API 로직)
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setErrorMsg('');
+
+        try {
+            const data = await apiLogin({ studentId, password });
+            setAuth(data.accessToken, data.user);
+            navigate('/');
+        } catch (err) {
+            const error = err as AxiosError<{ error: ApiError }>;
+            if (error.response && error.response.data.error) {
+                const errorData = error.response.data.error;
+                console.error('로그인 실패:', errorData);
+
+                if (errorData.code === 'INVALID_CREDENTIALS') {
+                    setErrorMsg('학번 또는 비밀번호가 일치하지 않습니다.');
+                } else {
+                    setErrorMsg(errorData.message);
+                }
+            } else {
+                setErrorMsg('로그인 중 오류가 발생했습니다.');
+            }
+            setIsLoading(false);
+        }
+    };
+
+    // 스플래시 스크린 타이머 로직
     useEffect(() => {
         const fadeOutTimer = setTimeout(() => {
             setIsFading(true);
         }, 2000);
 
         const removeTimer = setTimeout(() => {
-            setIsLoading(false);
+            setIsLoadingSplash(false);
         }, 2500);
         return () => {
             clearTimeout(fadeOutTimer);
@@ -99,11 +71,21 @@ const LoginPage = () => {
         };
     }, []);
 
-    if (isLoading) {
+    if (isLoadingSplash) {
         return <SplashScreen isFading={isFading} />;
     }
 
-    return <LoginForm />;
+    return (
+        <LoginForm
+            studentId={studentId}
+            setStudentId={setStudentId}
+            password={password}
+            setPassword={setPassword}
+            handleSubmit={handleSubmit}
+            isLoading={isLoading}
+            errorMsg={errorMsg}
+        />
+    );
 };
 
 export default LoginPage;

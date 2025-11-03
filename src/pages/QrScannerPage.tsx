@@ -69,7 +69,7 @@ const QrScannerPage = () => {
                     },
                 }}
                 constraints={{ facingMode: 'environment' }}
-                //    onScan은 'DetectedQrCode[]' 배열을 반환하므로, 첫 번째 값의 'rawValue'를 사용합니다.
+                //    onScan은 'DetectedQrCode[]' 배열을 반환하므로, 첫 번째 값의 'rawValue'를 사용
                 onScan={(result) => {
                     if (result && result.length > 0 && !isLoading) {
                         handleScan(result[0].rawValue);
