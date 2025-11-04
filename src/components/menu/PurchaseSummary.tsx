@@ -1,5 +1,6 @@
 // src/components/menu/PurchaseSummary.tsx
 import { useCartStore } from '../../store/useCartStore';
+import { useNavigate } from 'react-router-dom';
 import { HiXMark } from 'react-icons/hi2'; // 'X' 아이콘
 // import { useNavigate } from 'react-router-dom';
 
