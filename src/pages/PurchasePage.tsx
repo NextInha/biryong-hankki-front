@@ -93,6 +93,18 @@ const DUMMY_MENU_LIST: Menu[] = [
         created_at: '2025-10-10T11:00:00Z',
         updated_at: '2025-10-10T11:00:00Z',
     },
+    {
+        id: 'uuid-r4',
+        restaurant_id: 'r2',
+        name: '안성탕면',
+        ingredients: '',
+        price: 2500,
+        is_available: true,
+        average_rating: 4.7,
+        review_count: 90,
+        created_at: '2025-10-10T11:00:00Z',
+        updated_at: '2025-10-10T11:00:00Z',
+    },
 ];
 
 const PurchasePage = () => {
@@ -110,7 +122,7 @@ const PurchasePage = () => {
           scrollbar-width-none [&::-webkit-scrollbar]:hidden
         "
             >
-                <div className="text-2xl font-bold mb-2">메뉴 선택</div>
+                <div className="text-2xl font-bold mb-4">메뉴 선택</div>
                 <div className="text-lg font-medium mb-2">
                     <span className="font-bold">중식</span> 11:00 ~ 14:00
                 </div>
@@ -127,7 +139,7 @@ const PurchasePage = () => {
                     }
                 })}
 
-                <div className="text-lg font-medium mb-2">
+                <div className="text-lg font-medium pt-2">
                     <span className="font-bold">셀프라면</span> 11:00 ~ 18:30
                 </div>
                 {DUMMY_MENU_LIST.map((menu) => {
