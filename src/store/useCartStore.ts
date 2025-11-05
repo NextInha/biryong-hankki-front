@@ -6,11 +6,11 @@ import type { Menu } from '../types/menu';
 
 // 1. 스토어에서 사용할 '상태'와 '행동'의 타입을 정의합니다.
 interface CartState {
-    items: CartItem[]; // 카트에 담긴 아이템 배열
-    addItem: (menu: Menu) => void; // 아이템 추가
-    removeItem: (menuId: string) => void; // 아이템 제거
-    updateQuantity: (menuId: string, amount: number) => void; // 수량 변경 (+1 또는 -1)
-    clearCart: () => void; // 장바구니 비우기 (결제 완료 후)
+    items: CartItem[];
+    addItem: (menu: Menu) => void;
+    removeItem: (menuId: string) => void;
+    updateQuantity: (menuId: string, amount: number) => void;
+    clearCart: () => void;
 }
 
 // 2. 'create' 함수를 사용해 스토어를 만듭니다.
