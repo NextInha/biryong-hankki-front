@@ -22,6 +22,7 @@ const DUMMY_TICKET: Ticket = {
     // (API 명세서 예시에서 가져온 UUID)
     orderId: '7c9e6679-7425-40de-944b-e07fc1f90ae7',
     menuId: '550e8400-e29b-41d4-a716-446655440100',
+    isUsed: false,
 };
 
 const HomePage = () => {
@@ -35,8 +36,12 @@ const HomePage = () => {
     // 리뷰할 대상 식권 정보
     const [reviewTarget, setReviewTarget] = useState<Ticket | null>(null);
 
-    // 리뷰 모달 여는 핸들러
+    // 식사 완료 버튼 -> 식사 상태 변경 및 리뷰 모달 여는 핸들러임
     const handleOpenReviewModal = (ticketData: Ticket) => {
+        setActiveTicket({
+            ...ticketData,
+            isUsed: true,
+        });
         console.log('리뷰할 식권:', ticketData);
         setReviewTarget(ticketData); // 클릭된 식권 정보 저장
         setIsReviewModalOpen(true); // 모달 열기
@@ -118,6 +123,7 @@ const HomePage = () => {
             </main>
 
             {/* 리뷰 모달 렌더링 */}
+            {/* reviewTarget이 있을 때만 모달을 렌더링 (안정성) */}
             {reviewTarget && (
                 <ReviewModal
                     isOpen={isReviewModalOpen}

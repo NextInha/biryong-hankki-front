@@ -1,4 +1,4 @@
-// ['임시' 식권 타입 (API 명세서에 맞게 필드 추가)]
+// '임시' 식권 타입
 export interface Ticket {
     id: string; // 't1' (임시 ID)
     menuName: string; // '한상한담'
@@ -10,6 +10,9 @@ export interface Ticket {
     // (API 연동을 위해 추가)
     orderId: string; // (UUID)
     menuId: string; // (UUID)
+
+    // (추가: 식권 사용 여부) -> MyTicketCard에서 사용 -> true면 식권 회색됨.
+    isUsed?: boolean;
 }
 
 export interface LoginRequest {

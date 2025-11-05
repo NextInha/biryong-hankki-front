@@ -27,7 +27,7 @@ const EventBanner: React.FC = () => {
     };
 
     return (
-        <div className="relative w-full max-w-md mx-auto rounded-lg shadow-lg overflow-hidden">
+        <div className="relative w-full container rounded-lg shadow-lg overflow-hidden">
             <div
                 ref={scrollContainerRef}
                 onScroll={handleScroll}
@@ -50,7 +50,7 @@ const EventBanner: React.FC = () => {
                             src={banner.imageUrl}
                             alt={banner.alt}
                             className="
-                w-full h-32             // 높이 고정 (h-32)
+                w-full min-h-[128px]             
                 object-cover            // 이미지가 찌그러지지 않고 꽉 차게
               "
                         />
