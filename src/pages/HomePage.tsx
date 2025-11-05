@@ -118,7 +118,6 @@ const HomePage = () => {
             </main>
 
             {/* 리뷰 모달 렌더링 */}
-            {/* reviewTarget이 있을 때만 모달을 렌더링 (안정성) */}
             {reviewTarget && (
                 <ReviewModal
                     isOpen={isReviewModalOpen}
