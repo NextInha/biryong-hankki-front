@@ -74,7 +74,7 @@ const DUMMY_REVIEWS: Review[] = [
     },
 ];
 
-// --- 2. [변경] 필터/정렬 옵션 정의 ---
+//  필터/정렬 옵션 정의
 const SORT_OPTIONS = ['추천순', '최신순', '별점 높은 순', '별점 낮은 순'];
 const RESTAURANT_OPTIONS = [
     '전체',
@@ -98,24 +98,19 @@ const ReviewPage = () => {
     // 5. 필터링과 정렬을 useMemo로 구현
     const filteredAndSortedReviews = useMemo(() => {
         let filtered = DUMMY_REVIEWS;
-
-        // --- A. 필터링 (Filtering) ---
-
         // 1. 식당 필터
         if (restaurantFilter !== '전체') {
             filtered = filtered.filter(
                 (review) => review.restaurantName === restaurantFilter
             );
         }
-
         // 2. 시간대 필터)
         if (mealTypeFilter !== '전체') {
             filtered = filtered.filter(
                 (review) => review.mealType === mealTypeFilter
             );
         }
-
-        // --- B. 정렬 (Sorting) ---
+        // 정렬
         switch (sortBy) {
             case '최신순':
                 filtered.sort(

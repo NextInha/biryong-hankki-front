@@ -23,8 +23,7 @@ const CalendarModal = ({
                 className={`
           fixed bottom-0 left-1/2 -translate-x-1/2
           w-full max-w-md bg-white rounded-t-2xl shadow-xl
-          h-[47%] /* (기존 높이 유지) */
-          z-50
+          h-[47%] 
 
          
           transition-transform duration-300 ease-out

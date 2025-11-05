@@ -35,9 +35,5 @@ export const apiCreateOrder = async (
 /**
  * 2. 주문 결제 API 호출 함수
  * (POST /api/orders/:orderId/payment)
- * (이건 PaymentPage.tsx에서 사용할 거예요!)
+ *
  */
-// (타입 정의 ... 생략)
-// export const apiProcessPayment = async (orderId: string, paymentData: ...) => {
-//   ...
-// };

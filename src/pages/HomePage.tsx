@@ -11,7 +11,7 @@ import EventBanner from '../components/home/EventBanner';
 import type { Ticket } from '../types/user';
 import ReviewModal from '../components/home/ReviewModal';
 
-//  '가짜' 더미 데이터
+//  UI용 더미 데이터
 const DUMMY_TICKET: Ticket = {
     id: 't1',
     menuName: '한상한담',

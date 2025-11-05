@@ -20,7 +20,7 @@ interface AuthState {
 export const useAuthStore = create(
     persist<AuthState>(
         (set) => ({
-            // --- 초기 상태 ---
+            // 초기 상태
             token: null,
             user: null,
 

@@ -62,8 +62,6 @@ const PurchaseSummary = () => {
     };
 
     return (
-        // [★ 3. 애니메이션 클래스 수정]
-        // isVisible 상태에 따라 클래스를 동적으로 변경합니다.
         <div
             className={`
         fixed bottom-0 left-0 right-0 w-full max-w-md mx-auto
