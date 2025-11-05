@@ -3,7 +3,7 @@
 import logoBlue from '../../assets/icons/icon-logo-blue.svg';
 import inhaLogoBg from '../../assets/icons/icon-inhauniv-logo-square.svg';
 
-// 1. [★핵심★] 부모(LoginPage)로부터 받아야 할 모든 'props' 정의
+// 1. 부모(LoginPage)로부터 받아야 할 모든 'props' 정의
 interface LoginFormProps {
     studentId: string;
     setStudentId: (value: string) => void;
@@ -88,7 +88,6 @@ const LoginForm = ({
                     disabled={isLoading} // 로딩 중 비활성화
                     className="w-full bg-[#0066B3] text-white p-3 rounded-md font-bold hover:bg-blue-600 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    {/* 로딩 상태에 따라 텍스트 변경 */}
                     {isLoading ? '로그인 중...' : '로그인'}
                 </button>
             </form>

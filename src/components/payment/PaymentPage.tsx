@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import TopHeaderSecond from '../../components/layout/TopHeaderSecond';
+import type { CreateOrderResponse, OrderItem } from '../../types/order';
 
 // 아이콘 import - 경로가 실제 프로젝트와 맞는지 확인해주세요.
 import iconKakao from '../../assets/icons/icon-kakaopay.svg';
@@ -18,51 +19,60 @@ const PAYMENT_METHODS = [
     { id: 'other', name: '기타 결제 수단', icon: null },
 ];
 
-// OrderData 타입 정의
-// PurchaseSummary에서 넘겨주는 데이터 타입
-interface OrderData {
-    orderId: string;
-    restaurantName: string;
-    items: OrderItem[];
-    ticketNumber: string;
-    totalPrice: number;
-}
+// 'orderedAt' 날짜를 받아서 '조식/중식/석식'을 반환하는 유틸 함수
+const getMealType = (dateString: string): string => {
+    try {
+        const date = new Date(dateString);
+        const hours = date.getHours() - 9; // UTC 시간과 KST가 9시간 차이나서 -9로 조정 0-23 (KST 기준)
 
-// OrderItem 타입 정의
-interface OrderItem {
-    menuName: string;
-    quantity: number;
-    ingredients: string;
-    subtotal: number;
-}
+        // (기준 시간은 필요에 따라 조절하세요)
+        if (hours < 9 && hours >= 8) {
+            return '조식';
+        }
+        if (hours < 14 && hours >= 11) {
+            return '중식';
+        }
+        if (hours < 19 && hours >= 17) {
+            return '석식';
+        }
+    } catch (e) {
+        console.error('날짜 변환 오류:', e);
+        return '주문'; // 에러 시 기본값
+    }
+};
 
 const PaymentPage = () => {
     const navigate = useNavigate();
 
-    // 2. PurchaseSummary가 넘겨준 '주문 데이터'를 받음
+    // PurchaseSummary가 넘겨준 '주문 데이터'를 받음
     //const location = useLocation();
     //const orderData = location.state?.orderData as OrderData;
 
     // UI 확인용 더미 데이터 정의
-    const DUMMY_ORDER_DATA: OrderData = {
-        orderId: 'DUMMY-ORDER-123',
-        restaurantName: '학생식당(학생회관)',
+    const DUMMY_ORDER_DATA: CreateOrderResponse = {
+        orderId: '7c9e6679-7425-40de-944b-e07fc1f90ae7',
+        userId: '550e8400-e29b-41d4-a716-446655440000',
         items: [
             {
-                menuName: '더미 메뉴1 (중식)',
+                id: 1,
+                menuId: '550e8400-e29b-41d4-a716-446655440000',
+                menuName: '김치찌개',
                 quantity: 2,
-                ingredients: '재료 A, 재료 B',
-                subtotal: 18000,
+                price: 4500,
+                subtotal: 9000,
             },
             {
-                menuName: '더미 메뉴2 (중식)',
+                id: 2,
+                menuId: '550e8400-e29b-41d4-a716-446655440001',
+                menuName: '된장찌개',
                 quantity: 1,
-                ingredients: '재료 C',
-                subtotal: 9500,
+                price: 4500,
+                subtotal: 4500,
             },
         ],
-        ticketNumber: '256',
-        totalPrice: 27500,
+        totalPrice: 13500,
+        status: 'PENDING',
+        orderedAt: '2024-10-27T12:34:56.789Z',
     };
     const orderData = DUMMY_ORDER_DATA;
 
@@ -87,7 +97,6 @@ const PaymentPage = () => {
             setIsProcessing(false);
 
             // '주문 결제 API' 명세서대로 'OrderComplete' 페이지로 이동
-            // (참고) 성공 시 orderData를 state로 넘겨줄 수도 있습니다.
             navigate('/order-complete', { state: { orderData } });
         }, 2000); // 2초 딜레이
 
@@ -121,7 +130,7 @@ const PaymentPage = () => {
             <div className="flex flex-col h-screen items-center justify-center">
                 <p>잘못된 접근입니다. 주문을 다시 시작해주세요.</p>
                 <button
-                    onClick={() => navigate('/purchase')}
+                    onClick={() => navigate('/menu')} // '/menu' 등 실제 메뉴 페이지로
                     className="text-blue-600"
                 >
                     메뉴 선택으로 돌아가기
@@ -130,115 +139,118 @@ const PaymentPage = () => {
         );
     }
 
+    //  렌더링 직전에 식사 타입 계산
+    const mealType = getMealType(orderData.orderedAt);
+
     return (
-        <div className="flex flex-col h-screen bg-gray-100">
+        <>
             <TopHeaderSecond title="구매하기" />
 
-            {/* 7. 스크롤 영역 (헤더/푸터 제외) */}
-            <main className="grow overflow-y-auto pb-24">
-                {/* 주문 정보 카드 (티켓 번호) */}
-                <div className="bg-white shadow-md rounded-lg m-4 p-6 text-center">
-                    <p className="font-semibold text-gray-600">
-                        {orderData.restaurantName}
-                    </p>
-                    <p className="text-2xl font-bold text-gray-900 mb-4">
-                        {orderData.items[0].menuName}{' '}
-                        {orderData.items.length > 1
-                            ? `외 ${orderData.items.length - 1}건`
-                            : ''}
-                    </p>
-                    <p className="text-8xl font-bold tracking-wider text-blue-600">
-                        {orderData.ticketNumber}
-                    </p>
-                </div>
-
-                {/*  주문 내역 (주석 해제) */}
-                <div className="bg-white shadow-md rounded-lg m-4 p-6">
-                    <h3 className="text-lg font-bold mb-4">주문내역</h3>
-                    {orderData.items.map((item: OrderItem) => (
-                        <div
-                            key={item.menuName} // (key는 고유해야 함. menuId가 있다면 더 좋음)
-                            className="mb-3 pb-3 border-b last:border-b-0 last:mb-0 last:pb-0"
-                        >
-                            <p className="font-semibold">
-                                {/* (중식) 부분은 데이터에 따라 처리 */}
-                                {item.menuName} (x{item.quantity})
+            <div className="flex flex-col h-screen bg-white">
+                <main className="grow overflow-y-auto px-4 pb-24">
+                    {/* 주문 정보 카드 (티켓 번호) */}
+                    <div className="bg-white border border-gray-400 rounded-4xl m-4 p-6 text-center">
+                        <div className="mb-4">
+                            <p className="font-semibold text-gray-900 ">
+                                학생식당(학생회관)
+                                <br></br>
+                                {mealType}
                             </p>
-                            <p className="text-sm text-gray-500 truncate">
-                                {item.ingredients}
-                            </p>
-                            <p className="text-right font-bold text-gray-800">
-                                {item.subtotal.toLocaleString()}원
+                            <p className="text-4xl font-bold tracking-wider">
+                                0256 {/* 주문번호가 api 명세에 없음 */}
                             </p>
                         </div>
-                    ))}
-                </div>
+                        <div className="border-b border-gray-200"></div>
 
-                {/* 결제 수단 */}
-                <div className="bg-white shadow-md rounded-lg m-4 p-6">
-                    <h3 className="text-lg font-bold mb-4">결제수단</h3>
-                    <div className="space-y-4">
-                        {PAYMENT_METHODS.map((method) => (
-                            <label
-                                key={method.id}
-                                className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer"
-                                onClick={() => setSelectedMethod(method.id)}
-                            >
-                                <input
-                                    type="radio"
-                                    name="paymentMethod"
-                                    value={method.id}
-                                    checked={selectedMethod === method.id}
-                                    onChange={() =>
-                                        setSelectedMethod(method.id)
-                                    }
-                                    className="w-5 h-5 text-blue-600"
-                                />
-                                {method.icon && (
-                                    <img
-                                        src={method.icon}
-                                        alt={method.name}
-                                        className="w-6 h-6"
-                                    />
-                                )}
-                                <span className="font-semibold">
-                                    {method.name}
-                                </span>
-                            </label>
-                        ))}
+                        {/* 주문 내역 */}
+                        <div className="flex flex-col mt-4 items-start justify-center">
+                            <h3 className="text-lg font-semibold mb-4">
+                                주문내역
+                            </h3>
+                            {orderData.items.map((item: OrderItem) => (
+                                <div
+                                    key={item.id}
+                                    className="flex justify-between items-center w-full pb-2"
+                                >
+                                    <span className="font-semibold text-gray-900">
+                                        ({mealType}) {item.menuName} x{' '}
+                                        {item.quantity}
+                                    </span>
+                                    <span className=" font-semibold text-gray-800">
+                                        {item.subtotal.toLocaleString()}원
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                </div>
-            </main>
 
-            {/* 8. 하단 고정 결제 버튼 */}
-            <footer
-                className="
-         fixed bottom-0  right-0 w-full max-w-md mx-auto
-         bg-white shadow-[0_-4px_10px_rgba(0,0,0,0.05)]
-         p-4 flex justify-between items-center
-         left-1/2 -translate-x-1/2
-       "
-            >
-                <div>
-                    <span className="text-sm text-gray-500">결제금액</span>
-                    <p className="text-2xl font-bold text-gray-900">
-                        {orderData.totalPrice.toLocaleString()}원
-                    </p>
-                </div>
-                <button
-                    onClick={handlePayment}
-                    disabled={isProcessing}
+                    {/* 결제 수단 */}
+                    <div className="bg-white p-4">
+                        <h3 className="text-lg font-bold mb-4">결제수단</h3>
+                        <div className="space-y-4">
+                            {PAYMENT_METHODS.map((method) => (
+                                <label
+                                    key={method.id}
+                                    className="flex items-center gap-2  cursor-pointer"
+                                    onClick={() => setSelectedMethod(method.id)}
+                                >
+                                    <input
+                                        type="radio"
+                                        name="paymentMethod"
+                                        value={method.id}
+                                        checked={selectedMethod === method.id}
+                                        onChange={() =>
+                                            setSelectedMethod(method.id)
+                                        }
+                                        className="w-5 h-5 text-primary"
+                                    />
+                                    {/*  icon이 null이 아닐 때만 img 렌더링 */}
+                                    {method.icon && (
+                                        <img
+                                            src={method.icon}
+                                            alt={method.name}
+                                            className="w-10 h-10"
+                                        />
+                                    )}
+                                    <span className="font-semibold text-gray-900">
+                                        {method.name}
+                                    </span>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+                </main>
+
+                {/* 9. 하단 고정 결제 버튼 */}
+                <footer
                     className="
-             bg-primary text-white font-bold
-             py-3 px-8 rounded-lg 
-             hover:bg-blue-700 transition-colors
-             disabled:bg-gray-400
-           "
+                 fixed bottom-0 right-0 w-full max-w-md mx-auto
+                 bg-white shadow-[0_-4px_10px_rgba(0,0,0,0.05)]
+                 p-6 pb-12 flex justify-between items-center
+                 left-1/2 -translate-x-1/2
+               "
                 >
-                    {isProcessing ? '결제 중...' : '결제하기'}
-                </button>
-            </footer>
-        </div>
+                    <div>
+                        <span className="text-sm text-gray-500">결제금액</span>
+                        <p className="text-2xl font-bold text-gray-900">
+                            {orderData.totalPrice.toLocaleString()}원
+                        </p>
+                    </div>
+                    <button
+                        onClick={handlePayment}
+                        disabled={isProcessing}
+                        className="
+                     bg-primary text-white font-bold
+                     py-3 px-8 rounded-lg 
+                     hover:bg-blue-700 transition-colors
+                     disabled:bg-gray-400
+                   "
+                    >
+                        {isProcessing ? '결제 중...' : '결제하기'}
+                    </button>
+                </footer>
+            </div>
+        </>
     );
 };
 

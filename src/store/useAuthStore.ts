@@ -24,8 +24,6 @@ export const useAuthStore = create(
             token: null,
             user: null,
 
-            // --- 상태 변경 함수 (액션) ---
-
             // 3. 로그인 시: '지갑'에 토큰과 유저 정보 저장
             setAuth: (token, user) => set({ token, user }),
 

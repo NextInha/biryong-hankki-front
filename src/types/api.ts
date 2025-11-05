@@ -7,7 +7,7 @@
 export interface ApiError {
     code: string;
     message: string;
-    details?: any; // (선택) details가 있을 수도 있으니 추가
+    // details?: any; // (선택) details가 있을 수도 있으니 추가
 }
 
 export interface ApiErrorResponse {

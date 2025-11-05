@@ -9,6 +9,21 @@ export interface CreateOrderRequest {
 }
 
 // POST /api/orders 성공(201) 시 Response의 'data' 필드 타입
+export interface CreateOrderResponse {
+    orderId: string;
+    userId: string;
+    items: OrderItem[];
+    totalPrice: number;
+    status: 'PENDING';
+    orderedAt: string; // "2024-10-27T12:34:56.789Z"
+    //ticketNumber: string; // "256"
+
+    // (UI 시뮬레이션을 위해 추가했던 가짜 데이터)
+    // restaurantName?: string;
+    // ticketNumber?: string;
+    // ingredients?: string;
+}
+
 export interface OrderItem {
     id: number;
     menuId: string;
@@ -16,18 +31,4 @@ export interface OrderItem {
     quantity: number;
     price: number;
     subtotal: number;
-}
-
-export interface CreateOrderResponse {
-    orderId: string;
-    userId: string;
-    items: OrderItem[];
-    totalPrice: number;
-    status: 'PENDING';
-    orderedAt: string;
-
-    // (UI 시뮬레이션을 위해 추가했던 가짜 데이터)
-    restaurantName?: string;
-    ticketNumber?: string;
-    ingredients?: string;
 }

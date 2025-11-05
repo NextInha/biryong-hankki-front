@@ -14,7 +14,7 @@ const PurchaseSummary = () => {
     const { items, updateQuantity, removeItem, clearCart } = useCartStore();
     const navigate = useNavigate();
 
-    // 5. [★추가★] API 호출을 위한 로딩 및 에러 상태
+    // 5. API 호출을 위한 로딩 및 에러 상태
     const [isLoading, setIsLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
 
