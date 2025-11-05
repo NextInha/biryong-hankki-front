@@ -1,23 +1,14 @@
 // src/components/home/MyTicketCard.tsx
 
 import iconShare from '../../assets/icons/icon-share.svg';
-
-// 1. HomePage에서 정의한 '임시' Ticket 인터페이스
-// 나중에 API 연동하면 타입 바꾸기
-interface Ticket {
-    id: string;
-    menuName: string;
-    restaurantName: string;
-    mealType: string;
-    ticketNumber: string;
-    purchaseTime: string;
-}
+import type { Ticket } from '../../types/user';
 
 interface MyTicketCardProps {
     ticket: Ticket;
+    onMealCompleteClick: (ticketData: Ticket) => void;
 }
 
-const MyTicketCard = ({ ticket }: MyTicketCardProps) => {
+const MyTicketCard = ({ ticket, onMealCompleteClick }: MyTicketCardProps) => {
     return (
         // 파란색 배경의 카드
         <div
@@ -49,6 +40,7 @@ const MyTicketCard = ({ ticket }: MyTicketCardProps) => {
             border border-[#0066B3] shadow-2xl rounded-full px-3 py-2
             hover:bg-blue-50
           "
+                        onClick={() => onMealCompleteClick(ticket)}
                     >
                         식사완료
                     </button>

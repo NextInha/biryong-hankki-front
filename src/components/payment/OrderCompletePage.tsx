@@ -14,11 +14,11 @@ const OrderCompletePage = () => {
     };
 
     return (
-        <div className="flex flex-col h-screen bg-white items-center justify-between p-8">
+        <div className="flex flex-col h-screen bg-white  justify-between p-8">
             {/* 1. 상단 X 버튼 */}
             <div className="w-full flex justify-start">
                 <button onClick={handleClose} className="text-gray-500">
-                    <img src={iconX} className="w-4 h-4 "></img>
+                    <img src={iconX} className="w-5 h-5  "></img>
                 </button>
             </div>
 
@@ -32,7 +32,9 @@ const OrderCompletePage = () => {
             </div>
 
             {/* 3. 하단 오리 이미지 */}
-            <img src={imgDuck} alt="비룡이" className="w-40" />
+            <div className="flex justify-end">
+                <img src={imgDuck} alt="비룡이" className="w-45 " />
+            </div>
         </div>
     );
 };

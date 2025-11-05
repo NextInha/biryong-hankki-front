@@ -8,16 +8,8 @@ import MyTicketCard from '../components/home/MyTicketCard';
 import PurchaseButton from '../components/home/PurchaseButton';
 import iconInduck from '../assets/icons/icon-induck.svg';
 import EventBanner from '../components/home/EventBanner';
-
-// '임시' 식권 타입
-interface Ticket {
-    id: string;
-    menuName: string;
-    restaurantName: string; // MyTicketCard에서 필요
-    mealType: string; // MyTicketCard에서 필요
-    ticketNumber: string; // MyTicketCard에서 필요
-    purchaseTime: string; // MyTicketCard에서 필요
-}
+import type { Ticket } from '../types/user';
+import ReviewModal from '../components/home/ReviewModal';
 
 //  '가짜' 더미 데이터
 const DUMMY_TICKET: Ticket = {
@@ -27,6 +19,9 @@ const DUMMY_TICKET: Ticket = {
     mealType: '중식',
     ticketNumber: '0256',
     purchaseTime: '2025.10.13.월요일 12:37',
+    // (API 명세서 예시에서 가져온 UUID)
+    orderId: '7c9e6679-7425-40de-944b-e07fc1f90ae7',
+    menuId: '550e8400-e29b-41d4-a716-446655440100',
 };
 
 const HomePage = () => {
@@ -35,7 +30,24 @@ const HomePage = () => {
         DUMMY_TICKET
     );
 
-    // (가정) 유저 정보
+    // 리뷰 모달 상태 관리
+    const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+    // 리뷰할 대상 식권 정보
+    const [reviewTarget, setReviewTarget] = useState<Ticket | null>(null);
+
+    // 리뷰 모달 여는 핸들러
+    const handleOpenReviewModal = (ticketData: Ticket) => {
+        console.log('리뷰할 식권:', ticketData);
+        setReviewTarget(ticketData); // 클릭된 식권 정보 저장
+        setIsReviewModalOpen(true); // 모달 열기
+    };
+    // 리뷰 모달 닫는 핸들러
+    const handleCloseReviewModal = () => {
+        setIsReviewModalOpen(false);
+        // setActiveTicket(null);
+    };
+
+    // UI용 fake 유저 정보
     const userInfo = {
         name: '김인하',
     };
@@ -74,9 +86,12 @@ const HomePage = () => {
                         나의 식권
                     </h2>
 
-                    {/*'activeTicket'이 있으면 MyTicketCard 렌더링 */}
                     {activeTicket ? (
-                        <MyTicketCard ticket={activeTicket} /> // 가짜 식권 데이터 전달
+                        // MyTicketCard에 prop 전달
+                        <MyTicketCard
+                            ticket={activeTicket}
+                            onMealCompleteClick={handleOpenReviewModal}
+                        /> // 가짜 식권 데이터 전달
                     ) : (
                         <p className="text-gray-500 p-4 text-center">
                             보유한 식권이 없습니다.
@@ -101,6 +116,19 @@ const HomePage = () => {
                     <EventBanner />
                 </div>
             </main>
+
+            {/* 리뷰 모달 렌더링 */}
+            {/* reviewTarget이 있을 때만 모달을 렌더링 (안정성) */}
+            {reviewTarget && (
+                <ReviewModal
+                    isOpen={isReviewModalOpen}
+                    onClose={handleCloseReviewModal}
+                    // reviewTarget에서 실제 데이터 전달
+                    orderId={reviewTarget.orderId}
+                    menuId={reviewTarget.menuId}
+                    menuName={reviewTarget.menuName}
+                />
+            )}
         </>
     );
 };
