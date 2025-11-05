@@ -1,22 +1,16 @@
 // src/pages/OrderCompletePage.tsx
 
 import { useNavigate } from 'react-router-dom';
-import iconX from '../../assets/icons/icon-x.svg';
-// (가정) 아이콘 및 오리 이미지 import
+import iconX from '../../assets/icons/icon-x-black.svg';
 import iconCheck from '../../assets/icons/icon-check.svg';
 import imgDuck from '../../assets/icons/icon-induck-big.svg';
 
 const OrderCompletePage = () => {
     const navigate = useNavigate();
 
-    // (나중에 API 연동 시)
-    // const location = useLocation();
-    // const orderResult = location.state?.orderResult;
-    // (orderResult.shareQrCode를 이용해 QR 코드 띄우기)
-
-    // 1. "X" 버튼 클릭 시 홈으로 이동
+    // "X" 버튼 클릭 시 홈으로 이동
     const handleClose = () => {
-        navigate('/'); // 메인 홈으로 이동
+        navigate('/home'); // 메인 홈으로 이동
     };
 
     return (
@@ -24,7 +18,7 @@ const OrderCompletePage = () => {
             {/* 1. 상단 X 버튼 */}
             <div className="w-full flex justify-start">
                 <button onClick={handleClose} className="text-gray-500">
-                    <img src={iconX} className="w-8 h-8"></img>
+                    <img src={iconX} className="w-4 h-4 "></img>
                 </button>
             </div>
 

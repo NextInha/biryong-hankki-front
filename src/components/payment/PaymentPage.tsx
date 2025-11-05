@@ -164,7 +164,7 @@ const PaymentPage = () => {
 
                         {/* 주문 내역 */}
                         <div className="flex flex-col mt-4 items-start justify-center">
-                            <h3 className="text-lg font-semibold mb-4">
+                            <h3 className="text-lg font-semibold mb-2">
                                 주문내역
                             </h3>
                             {orderData.items.map((item: OrderItem) => (
@@ -172,11 +172,11 @@ const PaymentPage = () => {
                                     key={item.id}
                                     className="flex justify-between items-center w-full pb-2"
                                 >
-                                    <span className="font-semibold text-gray-900">
-                                        ({mealType}) {item.menuName} x{' '}
+                                    <span className="text-md font-semibold text-gray-900">
+                                        ({mealType}){item.menuName} x{' '}
                                         {item.quantity}
                                     </span>
-                                    <span className=" font-semibold text-gray-800">
+                                    <span className=" text-md font-semibold text-gray-800">
                                         {item.subtotal.toLocaleString()}원
                                     </span>
                                 </div>
