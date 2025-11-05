@@ -7,6 +7,7 @@ import MealStatus from '../components/home/MealStatus';
 import MyTicketCard from '../components/home/MyTicketCard';
 import PurchaseButton from '../components/home/PurchaseButton';
 import iconInduck from '../assets/icons/icon-induck.svg';
+import EventBanner from '../components/home/EventBanner';
 
 // '임시' 식권 타입
 interface Ticket {
@@ -57,7 +58,7 @@ const HomePage = () => {
                 </span>
             </div>
 
-            <main className="pt-16  px-6 bg-[#E6EDF3] min-h-screen">
+            <main className="pt-16 pb-32 px-6  bg-[#E6EDF3] min-h-screen">
                 {/* 유저 정보 & 식사 상태 */}
                 <div className="flex justify-between items-center mb-4 z-15">
                     <UserInfo
@@ -94,6 +95,11 @@ const HomePage = () => {
                         </p>
                     )}
                 </section>
+
+                <div className="mt-8 space-y-4">
+                    <h2 className="text-xl font-bold text-gray-900">이벤트</h2>
+                    <EventBanner />
+                </div>
             </main>
         </>
     );
