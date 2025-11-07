@@ -250,7 +250,7 @@ const ShareClaimPage = () => {
         const isDisabled = remainingCount <= 0;
         const ingredients = formatIngredients(item.ingredients);
         const restaurantName =
-            item.restaurantName ?? shareData.order.userName ?? item.menuName;
+            item.restaurantName ?? shareData?.order.userName ?? item.menuName;
         const baseClasses =
             'w-full mb-[13px] last:mb-0 p-3 min-h-24 rounded-lg shadow-md flex items-center justify-between gap-3 border transition-all duration-150';
         const stateClasses = isDisabled

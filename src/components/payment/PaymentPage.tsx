@@ -71,9 +71,9 @@ const PaymentPage = () => {
     const [orderData, setOrderData] = useState<CreateOrderResponse | null>(
         locationState?.orderData ?? null
     );
-    const [selectedMethod, setSelectedMethod] = useState(
-        PAYMENT_METHODS[0]?.id ?? 'card'
-    );
+    const [selectedMethod, setSelectedMethod] = useState<
+        'hana' | 'card' | 'kakao' | 'naver' | 'payco' | 'toss' | 'other'
+    >(PAYMENT_METHODS[0]?.id ?? 'card');
     const [isProcessing, setIsProcessing] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [menuMetaById, setMenuMetaById] = useState<
