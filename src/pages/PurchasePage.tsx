@@ -50,8 +50,10 @@ const PurchasePage = () => {
             setError(null);
 
             try {
+                const today = new Date();
+                const date = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
                 const data = await fetchMenus(
-                    restaurantId != null ? { restaurantId } : undefined
+                    restaurantId != null ? { restaurantId, date } : { date }
                 );
                 if (!ignore) {
                     setMenus(data);
