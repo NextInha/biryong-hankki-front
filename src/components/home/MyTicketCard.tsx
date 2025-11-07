@@ -2,73 +2,112 @@
 
 import iconShare from '../../assets/icons/icon-share.svg';
 
-import type { Ticket } from '../../types/user';
+import type { Ticket } from '../../types/ticket';
+
 interface MyTicketCardProps {
-    ticket: Ticket;
-    onMealCompleteClick: (ticketData: Ticket) => void;
+    ticket: Ticket | null;
+    onMealCompleteClick?: (ticketData: Ticket) => void;
+    onShareClick?: (ticketData: Ticket | null) => void;
 }
 
-const MyTicketCard = ({ ticket, onMealCompleteClick }: MyTicketCardProps) => {
+const MyTicketCard = ({
+    ticket,
+    onMealCompleteClick,
+    onShareClick,
+}: MyTicketCardProps) => {
+    if (!ticket) {
+        return (
+            <div
+                className="
+            bg-[#0066B3] text-white rounded-3xl shadow-lg
+            flex flex-col pt-4 w-full transition-all duration-300
+          "
+            >
+                <div className="flex justify-between items-center mb-4 px-2">
+                    <div className="w-6 h-6" />
+                    <h3 className="text-2xl font-semibold">나의 식권</h3>
+                    <button
+                        type="button"
+                        className="p-1 mr-1 opacity-70"
+                        onClick={() => onShareClick?.(null)}
+                    >
+                        <img src={iconShare} className="w-6 h-6" />
+                    </button>
+                </div>
+                <div className="bg-white text-gray-600 rounded-3xl p-6 text-center shadow-inner min-h-[220px] flex flex-col items-center justify-center gap-2">
+                    <p className="text-lg font-semibold text-gray-700">
+                        보유한 식권이 없습니다.
+                    </p>
+                    <p className="text-sm text-gray-500">
+                        식권을 구매하거나 공유 식권으로 받아보세요.
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
+    const isUsed = ticket.isUsed;
+    const mealLabel = ticket.mealLabel ?? '식권';
+    const purchaseTime = ticket.formattedIssuedAt;
+    const restaurantDisplayName =
+        ticket.restaurantName ?? ticket.menuName ?? '식당 정보 미제공';
+
     return (
-        // 파란색 배경의 카드
         <div
             className={`
         bg-[#0066B3] text-white rounded-3xl shadow-lg
         flex flex-col pt-4 w-full
         transition-all duration-300
-        ${ticket.isUsed ? 'grayscale opacity-70' : ''} 
+        ${isUsed ? 'grayscale opacity-70' : ''} 
       `}
         >
-            {/* 1. 헤더: 메뉴명 + 공유 버튼 */}
             <div className="flex justify-between items-center mb-4 px-2">
-                <div className="w-6 h-6"></div>
-                <h3 className="text-2xl font-bold">{ticket.menuName}</h3>
-                <button className="p-1" disabled={ticket.isUsed}>
-                    <img src={iconShare} className="w-6 h-6"></img>
+                <div className="w-6 h-6" />
+                <h3 className="text-2xl font-bold">{restaurantDisplayName}</h3>
+                <button
+                    type="button"
+                    className={`p-1 ${isUsed ? 'opacity-40 cursor-not-allowed' : ''}`}
+                    disabled={isUsed}
+                    onClick={() => onShareClick?.(ticket)}
+                >
+                    <img src={iconShare} className="w-6 h-6" />
                 </button>
             </div>
 
-            {/* 2. Body: 하얀색 내부 카드 */}
             <div className="bg-white text-gray-900 rounded-3xl p-4 text-center shadow-inner">
-                {/* 식당 이름, 식사완료 버튼 */}
                 <div className="flex justify-between items-center mb-1">
-                    <div className="px-9 py-2"> </div>
-                    <span className="font-semibold">
-                        {ticket.restaurantName}
-                    </span>
-
-                    {/* '식사완료' 버튼 수정 */}
+                    <div className="px-9 py-2" />
+                    <span className="font-semibold">{restaurantDisplayName}</span>
                     <button
+                        type="button"
                         className={`
               text-sm font-semibold rounded-full px-3 py-2
               transition-colors duration-200
               ${
-                  ticket.isUsed
-                      ? 'bg-gray-100 text-gray-400 border border-gray-300' // (사용됨)
-                      : 'bg-white text-primary border border-primary shadow-2xl hover:bg-blue-50' // (사용 전)
+                  isUsed
+                      ? 'bg-gray-100 text-gray-400 border border-gray-300'
+                      : 'bg-white text-primary border border-primary shadow-2xl hover:bg-blue-50'
               }
             `}
-                        // 사용되었으면, 클릭 이벤트와 버튼 자체를 비활성화
                         onClick={() =>
-                            !ticket.isUsed && onMealCompleteClick(ticket)
+                            !isUsed &&
+                            onMealCompleteClick &&
+                            onMealCompleteClick(ticket)
                         }
-                        disabled={ticket.isUsed}
+                        disabled={isUsed}
                     >
-                        {ticket.isUsed ? '식사완료됨' : '식사완료'}
+                        {isUsed ? '식사완료됨' : '식사완료'}
                     </button>
                 </div>
 
-                {/* 식사 종류 */}
-                <p className="text-lg font-bold mb-2">{ticket.mealType}</p>
+                <p className="text-lg font-bold mb-2">{mealLabel}</p>
 
-                {/* 식권 번호 */}
                 <p className="text-7xl font-bold tracking-wider my-4">
                     {ticket.ticketNumber}
                 </p>
 
-                {/* 결제 시각 */}
                 <p className="text-sm text-gray-500">[결제시각]</p>
-                <p className="text-sm text-gray-500">{ticket.purchaseTime}</p>
+                <p className="text-sm text-gray-500">{purchaseTime}</p>
             </div>
         </div>
     );

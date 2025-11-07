@@ -22,7 +22,7 @@ const LoginPage = () => {
 
     // 로그인 관련 상태
     const [studentId, setStudentId] = useState('');
-    const [password, setPassword] = useState('');
+    const [name, setName] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingSplash, setIsLoadingSplash] = useState(true);
@@ -33,19 +33,22 @@ const LoginPage = () => {
         e.preventDefault();
         setIsLoading(true);
         setErrorMsg('');
-        if (studentId === 'admin' && password === 'admin') {
+
+        if (studentId === 'admin' && name === 'admin') {
             setAuth('admin-token', {
                 id: '1',
                 studentId: 'admin',
                 name: '관리자',
             });
+            setIsLoading(false);
             navigate('/home');
             return;
         }
+
         try {
-            const data = await apiLogin({ studentId, password });
+            const data = await apiLogin({ studentId, name });
             setAuth(data.accessToken, data.user);
-            navigate('/');
+            navigate('/home');
         } catch (err) {
             const error = err as AxiosError<{ error: ApiError }>;
             if (error.response && error.response.data.error) {
@@ -53,13 +56,14 @@ const LoginPage = () => {
                 console.error('로그인 실패:', errorData);
 
                 if (errorData.code === 'INVALID_CREDENTIALS') {
-                    setErrorMsg('학번 또는 비밀번호가 일치하지 않습니다.');
+                    setErrorMsg('학번 또는 이름이 일치하지 않습니다.');
                 } else {
                     setErrorMsg(errorData.message);
                 }
             } else {
                 setErrorMsg('로그인 중 오류가 발생했습니다.');
             }
+        } finally {
             setIsLoading(false);
         }
     };
@@ -87,8 +91,8 @@ const LoginPage = () => {
         <LoginForm
             studentId={studentId}
             setStudentId={setStudentId}
-            password={password}
-            setPassword={setPassword}
+            name={name}
+            setName={setName}
             handleSubmit={handleSubmit}
             isLoading={isLoading}
             errorMsg={errorMsg}

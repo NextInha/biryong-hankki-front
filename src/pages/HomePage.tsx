@@ -1,6 +1,6 @@
 // src/pages/HomePage.tsx
 
-import { useState } from 'react'; // 1. useEffect 대신 useState만 사용
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import TopHeader from '../components/layout/TopHeader';
 import UserInfo from '../components/home/UserInfo';
 import MealStatus from '../components/home/MealStatus';
@@ -8,55 +8,253 @@ import MyTicketCard from '../components/home/MyTicketCard';
 import PurchaseButton from '../components/home/PurchaseButton';
 import iconInduck from '../assets/icons/icon-induck.svg';
 import EventBanner from '../components/home/EventBanner';
-import type { Ticket } from '../types/user';
 import ReviewModal from '../components/home/ReviewModal';
+import ShareQrModal from '../components/home/ShareQrModal';
+import { claimRemainingTickets, fetchMyTickets } from '../api/mealTickets';
+import type { MyTicketApiItem, MyTicketsApiResponse, Ticket } from '../types/ticket';
+import { getRestaurantMeta } from '../constants/restaurants';
+import { useAuthStore } from '../store/useAuthStore';
+import { fetchMyOrders } from '../api/orders';
+import {
+    loadPendingShareOrders,
+    removePendingShareOrder,
+    type PendingShareOrder,
+} from '../utils/pendingShare';
 
-//  UI용 더미 데이터
-const DUMMY_TICKET: Ticket = {
-    id: 't1',
-    menuName: '한상한담',
-    restaurantName: '학생식당(학생회관)',
-    mealType: '중식',
-    ticketNumber: '0256',
-    purchaseTime: '2025.10.13.월요일 12:37',
-    // (API 명세서 예시에서 가져온 UUID)
-    orderId: '7c9e6679-7425-40de-944b-e07fc1f90ae7',
-    menuId: '550e8400-e29b-41d4-a716-446655440100',
-    isUsed: false,
+const formatIssuedAt = (value?: string | null) => {
+    if (!value) {
+        return '-';
+    }
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+        return '-';
+    }
+
+    const dateText = new Intl.DateTimeFormat('ko-KR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        weekday: 'short',
+    }).format(date);
+
+    const timeText = new Intl.DateTimeFormat('ko-KR', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+    }).format(date);
+
+    return `${dateText} ${timeText}`;
+};
+
+const mapTicket = (item: MyTicketApiItem): Ticket => {
+    const meta = getRestaurantMeta(item.restaurantId ?? undefined);
+
+    return {
+        id: item.id,
+        ticketNumber: item.ticketNumber,
+        qrCode: item.qrCode,
+        orderId: item.orderId,
+        orderItemId: item.orderItemId,
+        mealTicketId: item.id,
+        menuId: item.menuId,
+        menuName: item.menuName,
+        restaurantId:
+            item.restaurantId != null ? Number(item.restaurantId) : undefined,
+        restaurantName: item.restaurantName ?? meta?.label,
+        mealLabel: meta?.label,
+        price: item.price,
+        quantity: item.quantity,
+        isActive: item.isActive,
+        isUsed: !item.isActive,
+        issuedAt: item.issuedAt,
+        formattedIssuedAt: formatIssuedAt(item.issuedAt),
+        usedAt: item.usedAt,
+        expiresAt: item.expiresAt,
+        remainingMinutes: item.remainingMinutes ?? 0,
+        shareQrCode: item.shareQrCode ?? null,
+    };
 };
 
 const HomePage = () => {
-    //식권 상태 (임시)
-    const [activeTicket, setActiveTicket] = useState<Ticket | null>(
-        DUMMY_TICKET
+    const user = useAuthStore((state) => state.user);
+
+    const [tickets, setTickets] = useState<Ticket[]>([]);
+    const [summary, setSummary] = useState({
+        total: 0,
+        activeCount: 0,
+        usedCount: 0,
+    });
+    const [orderItemCount, setOrderItemCount] = useState(0);
+    const [selectedTicketId, setSelectedTicketId] = useState<string | null>(
+        null
     );
-
-    // 리뷰 모달 상태 관리
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
-    // 리뷰할 대상 식권 정보
     const [reviewTarget, setReviewTarget] = useState<Ticket | null>(null);
-
-    // 식사 완료 버튼 -> 식사 상태 변경 및 리뷰 모달 여는 핸들러임
-    const handleOpenReviewModal = (ticketData: Ticket) => {
-        setActiveTicket({
-            ...ticketData,
-            isUsed: true,
-        });
-        console.log('리뷰할 식권:', ticketData);
-        setReviewTarget(ticketData); // 클릭된 식권 정보 저장
-        setIsReviewModalOpen(true); // 모달 열기
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+    type ShareTarget = {
+        orderId: string;
+        shareQrCode: string | null;
     };
-    // 리뷰 모달 닫는 핸들러
+
+    const [shareTarget, setShareTarget] = useState<ShareTarget | null>(null);
+    const [pendingShareOrders, setPendingShareOrders] = useState<
+        PendingShareOrder[]
+    >([]);
+    const [isClaimingRemaining, setIsClaimingRemaining] = useState(false);
+
+    useEffect(() => {
+        setPendingShareOrders(loadPendingShareOrders());
+    }, []);
+
+    const applyTicketResponse = useCallback((data: MyTicketsApiResponse) => {
+        const mapped = data.tickets.map(mapTicket);
+
+        setTickets(mapped);
+        setSummary({
+            total: data.total,
+            activeCount: data.activeCount,
+            usedCount: data.usedCount,
+        });
+
+        setSelectedTicketId((prev) => {
+            if (prev && mapped.some((ticket) => ticket.id === prev)) {
+                return prev;
+            }
+
+            const firstActive =
+                mapped.find((ticket) => !ticket.isUsed) ?? mapped[0] ?? null;
+            return firstActive?.id ?? null;
+        });
+    }, []);
+
+    const loadTickets = useCallback(async () => {
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            const data = await fetchMyTickets({ status: 'active' });
+            applyTicketResponse(data);
+            setPendingShareOrders(loadPendingShareOrders());
+        } catch (err) {
+            console.error('식권 불러오기 실패:', err);
+            setError('식권을 불러오지 못했습니다.');
+        } finally {
+            setIsLoading(false);
+        }
+    }, [applyTicketResponse]);
+
+    useEffect(() => {
+        void loadTickets();
+    }, [loadTickets]);
+
+    useEffect(() => {
+        let ignore = false;
+
+        const loadOrderCount = async () => {
+            try {
+                const history = await fetchMyOrders();
+                if (ignore) {
+                    return;
+                }
+
+                const totalItems = history.orders.reduce((orderAcc, order) => {
+                    const orderTotal = order.items.reduce(
+                        (itemAcc, item) => itemAcc + Math.max(item.quantity, 1),
+                        0
+                    );
+                    return orderAcc + orderTotal;
+                }, 0);
+
+                setOrderItemCount(totalItems);
+            } catch (error) {
+                console.error('주문 수량 불러오기 실패:', error);
+            }
+        };
+
+        loadOrderCount();
+
+        return () => {
+            ignore = true;
+        };
+    }, []);
+
+    const activeTicket = useMemo(() => {
+        if (selectedTicketId) {
+            return (
+                tickets.find((ticket) => ticket.id === selectedTicketId) ?? null
+            );
+        }
+
+        return null;
+    }, [selectedTicketId, tickets]);
+
+    const handleOpenReviewModal = (ticketData: Ticket) => {
+        setSelectedTicketId(ticketData.id);
+        setReviewTarget(ticketData);
+        setIsReviewModalOpen(true);
+    };
+
     const handleCloseReviewModal = () => {
         setIsReviewModalOpen(false);
-        // setActiveTicket(null);
     };
 
-    // UI용 fake 유저 정보
-    const userInfo = {
-        name: '김인하',
+    const handleReviewSuccess = (ticketId: string) => {
+        setTickets((prev) =>
+            prev.map((ticket) =>
+                ticket.id === ticketId
+                    ? { ...ticket, isUsed: true, isActive: false }
+                    : ticket
+            )
+        );
+
+        setSummary((prev) => ({
+            ...prev,
+            activeCount: Math.max(prev.activeCount - 1, 0),
+            usedCount: prev.usedCount + 1,
+        }));
+
+        setSelectedTicketId(ticketId);
     };
-    const ticketCount = activeTicket ? 256 : 0;
+
+    const handleOpenShareModal = (ticketData: Ticket | null) => {
+        const latestStores = loadPendingShareOrders();
+        setPendingShareOrders(latestStores);
+
+        const fallbackList =
+            latestStores.length > 0 ? latestStores : pendingShareOrders;
+        let target: ShareTarget | null = null;
+
+        if (ticketData?.shareQrCode) {
+            target = {
+                orderId: ticketData.orderId,
+                shareQrCode: ticketData.shareQrCode,
+            };
+        } else if (fallbackList.length > 0) {
+            const latest = fallbackList[0];
+            target = {
+                orderId: latest.orderId,
+                shareQrCode: latest.shareQrCode ?? null,
+            };
+        }
+
+        if (!target || !target.shareQrCode) {
+            window.alert('공유 가능한 QR 정보를 찾지 못했습니다. 잠시 후 다시 시도해주세요.');
+            return;
+        }
+
+        setShareTarget(target);
+        setIsShareModalOpen(true);
+    };
+
+    const handleCloseShareModal = () => {
+        setIsShareModalOpen(false);
+    };
+
+    const ticketCount = orderItemCount > 0 ? orderItemCount : summary.total;
+    const userName = user?.name ?? '인하인';
 
     return (
         <>
@@ -79,8 +277,8 @@ const HomePage = () => {
                 {/* 유저 정보 & 식사 상태 */}
                 <div className="flex justify-between items-center mb-4 z-15">
                     <UserInfo
-                        name={userInfo.name}
-                        ticketCount={ticketCount} // 가짜 장수 전달
+                        name={userName}
+                        ticketCount={ticketCount}
                     />
                     <MealStatus />
                 </div>
@@ -91,23 +289,29 @@ const HomePage = () => {
                         나의 식권
                     </h2>
 
-                    {activeTicket ? (
-                        // MyTicketCard에 prop 전달
-                        <MyTicketCard
-                            ticket={activeTicket}
-                            onMealCompleteClick={handleOpenReviewModal}
-                        /> // 가짜 식권 데이터 전달
-                    ) : (
+                    {isLoading && (
                         <p className="text-gray-500 p-4 text-center">
-                            보유한 식권이 없습니다.
+                            식권을 불러오는 중입니다...
                         </p>
+                    )}
+
+                    {error && !isLoading && (
+                        <p className="text-red-500 p-4 text-center">{error}</p>
+                    )}
+
+                    {!isLoading && !error && (
+                        <MyTicketCard
+                            ticket={activeTicket ?? null}
+                            onMealCompleteClick={handleOpenReviewModal}
+                            onShareClick={handleOpenShareModal}
+                        />
                     )}
 
                     {/* "식권 예매하기" 버튼은 항상 보임 */}
                     <PurchaseButton />
 
                     {/* 경고 문구 (식권이 있을 때만 보임) */}
-                    {activeTicket && (
+                    {activeTicket && !isLoading && !error && (
                         <p className="text-center text-sm text-gray-600 mt-4">
                             식사 수령 시 해당 모바일 식권을 제시해주세요.
                             <br />
@@ -128,10 +332,39 @@ const HomePage = () => {
                 <ReviewModal
                     isOpen={isReviewModalOpen}
                     onClose={handleCloseReviewModal}
+                    onSuccess={() => handleReviewSuccess(reviewTarget.mealTicketId)}
                     // reviewTarget에서 실제 데이터 전달
                     orderId={reviewTarget.orderId}
+                    orderItemId={reviewTarget.orderItemId}
+                    mealTicketId={reviewTarget.mealTicketId}
                     menuId={reviewTarget.menuId}
                     menuName={reviewTarget.menuName}
+                />
+            )}
+            {isShareModalOpen && (
+                <ShareQrModal
+                    shareQrCode={shareTarget?.shareQrCode ?? null}
+                    orderId={shareTarget?.orderId ?? null}
+                    isClaiming={isClaimingRemaining}
+                    onClose={handleCloseShareModal}
+                    onClaimRemaining={async (orderId) => {
+                        try {
+                            setIsClaimingRemaining(true);
+                            await claimRemainingTickets(orderId);
+                            removePendingShareOrder(orderId);
+                            const data = await fetchMyTickets({ status: 'active' });
+                            applyTicketResponse(data);
+                            setPendingShareOrders(loadPendingShareOrders());
+                            setShareTarget(null);
+                            setIsShareModalOpen(false);
+                            window.alert('남은 식권을 모두 발급했습니다.');
+                        } catch (err) {
+                            console.error('남은 식권 발급 실패:', err);
+                            window.alert('남은 식권을 발급하지 못했습니다. 다시 시도해주세요.');
+                        } finally {
+                            setIsClaimingRemaining(false);
+                        }
+                    }}
                 />
             )}
         </>

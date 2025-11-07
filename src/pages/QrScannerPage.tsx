@@ -3,15 +3,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Scanner } from '@yudiel/react-qr-scanner';
+import { AxiosError } from 'axios';
 import iconX from '../assets/icons/icon-x.svg';
 import iconPlus from '../assets/icons/icon-plus.svg';
-//import { api } from '../api';
-//import { AxiosError } from 'axios';
+import { scanShareQrCode } from '../api/mealTickets';
+import type { ApiError } from '../types/api';
 
-// interface ApiError {
-//     code: string;
-//     message: string;
-// }
+const PURCHASE_QR_VALUE = 'PURCHASE-QR-2025';
 
 const QrScannerPage = () => {
     const navigate = useNavigate();
@@ -19,42 +17,41 @@ const QrScannerPage = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     const handleScan = async (scannedData: string) => {
-        if (isLoading) return;
+        if (isLoading || !scannedData) {
+            return;
+        }
 
-        console.log('스캔된 QR 데이터:', scannedData);
         setIsLoading(true);
         setScanError(null);
 
-        // 0.5초 딜레이 (로딩 UI 테스트용)
-        setTimeout(() => {
-            navigate('/purchase');
-        }, 500);
+        try {
+            if (scannedData.startsWith('SHARE-QR-')) {
+                const shareData = await scanShareQrCode(scannedData);
+                setIsLoading(false);
+                navigate('/share-claim', {
+                    state: { shareQrCode: scannedData, shareData },
+                });
+                return;
+            }
 
-        // --- (API 연동 코드) ---
-        /*
-    try {
-      const response = await api.post('/api/qr/verify', {
-        qrCode: scannedData,
-      });
-
-      if (response.data.data.isValid) {
-        navigate('/purchase');
-      } else {
-        setScanError('올바른 QR 코드가 아닙니다.');
-        setIsLoading(false);
-      }
-    } catch (err) {
-      const error = err as AxiosError<{ error: ApiError }>;
-      if (error.response) {
-        const errorData = error.response.data.error;
-        // ... (에러 처리 switch 문) ...
-        setScanError(errorData.message || 'QR 검증에 실패했습니다.');
-      } else {
-        setScanError('네트워크 오류가 발생했습니다.');
-      }
-      setIsLoading(false);
-    }
-    */
+            if (scannedData.includes(PURCHASE_QR_VALUE)) {
+                navigate('/purchase');
+            } else {
+                throw new Error('등록된 식당 QR이 아닙니다.');
+            }
+        } catch (error) {
+            const axiosError = error as AxiosError<{ error: ApiError }>;
+            if (axiosError.response?.data?.error) {
+                setScanError(
+                    axiosError.response.data.error.message ??
+                        'QR 정보를 불러오지 못했습니다.'
+                );
+            } else {
+                setScanError('QR 정보를 불러오지 못했습니다.');
+            }
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -87,7 +84,11 @@ const QrScannerPage = () => {
 
             <div className="absolute top-0 left-0 right-0 p-5 flex items-center z-10">
                 <button
-                    onClick={() => console.log('clicked')}
+                    onClick={() =>
+                        navigate('/home', {
+                            replace: true,
+                        })
+                    }
                     className="text-white"
                 >
                     <img src={iconX} alt="back" className="w-4 h-4"></img>
@@ -112,9 +113,8 @@ const QrScannerPage = () => {
                     <p className="text-red-400 font-semibold">{scanError}</p>
                 ) : (
                     <p className="text-white">
-                        학생 식당 내 큐알 코드를 인식해주세요.
-                        <br />
-                        스캔 시, 메뉴 선택 창으로 넘어갑니다.
+                        식당 QR을 스캔하면 구매 페이지로, 공유 QR을 스캔하면
+                        식권 나눔 페이지로 이동합니다.
                     </p>
                 )}
             </div>

@@ -2,7 +2,12 @@
 
 import { api } from './index'; // 공통 axios 인스턴스 (JWT 자동 포함)
 import type { CartItem } from '../types/cart'; //  Zustand 장바구니 타입
-import type { CreateOrderRequest, CreateOrderResponse } from '../types/order'; // 주문 생성 관련 타입
+import type {
+    CreateOrderRequest,
+    CreateOrderResponse,
+    OrderPaymentRequest,
+    OrderPaymentResponse,
+} from '../types/order'; // 주문 관련 타입
 import type { ApiResponse } from '../types/api'; // 공통 응답 타입
 
 /**
@@ -24,7 +29,7 @@ export const apiCreateOrder = async (
     };
 
     const response = await api.post<ApiResponse<CreateOrderResponse>>(
-        '/api/orders',
+        '/orders',
         requestData
     );
 
@@ -37,3 +42,14 @@ export const apiCreateOrder = async (
  * (POST /api/orders/:orderId/payment)
  *
  */
+export const apiProcessPayment = async (
+    orderId: string,
+    payload: OrderPaymentRequest
+): Promise<OrderPaymentResponse> => {
+    const response = await api.post<ApiResponse<OrderPaymentResponse>>(
+        `/orders/${orderId}/payment`,
+        payload
+    );
+
+    return response.data.data;
+};

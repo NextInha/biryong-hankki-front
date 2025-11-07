@@ -3,12 +3,17 @@
 import { useState, useEffect } from 'react';
 import { FaStar } from 'react-icons/fa'; // 별 아이콘
 import { IoClose } from 'react-icons/io5'; // 닫기 아이콘
+import { AxiosError } from 'axios';
+import { createReview } from '../../api/review';
 
 // Props 타입 정의
 interface ReviewModalProps {
     isOpen: boolean; // 모달이 열려있는지 여부
     onClose: () => void; // 모달을 닫는 함수
+    onSuccess: () => void;
     orderId: string; // 리뷰 대상 주문 ID
+    orderItemId: string;
+    mealTicketId: string;
     menuId: string; // 리뷰 대상 메뉴 ID
     menuName: string; // 리뷰 대상 메뉴 이름
 }
@@ -16,13 +21,17 @@ interface ReviewModalProps {
 const ReviewModal = ({
     isOpen,
     onClose,
+    onSuccess,
     orderId,
+    orderItemId,
+    mealTicketId,
     menuId,
     menuName,
 }: ReviewModalProps) => {
     const [rating, setRating] = useState(0); // 현재 선택된 별점
     const [hoverRating, setHoverRating] = useState(0); // 마우스 호버 별점
     const [content, setContent] = useState(''); // 리뷰 내용
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // 모달이 닫힐 때 상태 초기화
     useEffect(() => {
@@ -37,26 +46,44 @@ const ReviewModal = ({
     }, [isOpen]);
 
     // (UI용) 리뷰 제출 핸들러
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         // API 명세서 기준 유효성 검사
         if (rating === 0) {
             alert('별점을 선택해주세요.');
             return;
         }
-        if (content.trim().length < 10) {
-            alert('리뷰를 10자 이상 입력해주세요.');
+        if (content.trim().length === 0) {
+            alert('리뷰 내용을 입력해주세요.');
             return;
         }
 
-        // (UI용) API 연동 대신 콘솔에 로그 출력
-        console.log('--- 리뷰 제출 (UI) ---', {
-            orderId,
-            menuId,
-            rating,
-            content,
-        });
-        alert('리뷰가 등록되었습니다! (UI 테스트)');
-        onClose(); // 모달 닫기
+        try {
+            setIsSubmitting(true);
+            await createReview({
+                orderId,
+                orderItemId,
+                mealTicketId,
+                menuId,
+                rating,
+                content: content.trim(),
+            });
+            alert('리뷰가 등록되었습니다!');
+            onSuccess();
+            onClose();
+        } catch (error) {
+            console.error('리뷰 등록 실패:', error);
+
+            const axiosError = error as AxiosError<{ error?: { message?: string; code?: string } }>;
+            const apiMessage =
+                axiosError.response?.data?.error?.message ??
+                (axiosError.response?.status === 409
+                    ? '이미 이 식권으로 작성한 리뷰가 있습니다.'
+                    : null);
+
+            alert(apiMessage ?? '리뷰 등록에 실패했습니다. 잠시 후 다시 시도해주세요.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -119,12 +146,17 @@ const ReviewModal = ({
 
                 {/* 리뷰 텍스트 입력 */}
                 <div className="relative w-full">
+                    <label htmlFor="reviewContent" className="sr-only">
+                        리뷰 내용
+                    </label>
                     <textarea
+                        id="reviewContent"
+                        name="reviewContent"
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
                         rows={5}
                         maxLength={500} // (API 명세서)
-                        placeholder="리뷰 내용을 10자 이상 500자 이하로 입력해주세요."
+                        placeholder="리뷰 내용을 입력해주세요."
                         className="
               w-full p-3 border border-gray-300 rounded-lg resize-none
               focus:outline-none focus:ring-2 focus:ring-primary
@@ -138,7 +170,9 @@ const ReviewModal = ({
                 {/* 완료 버튼 (primary 색상 사용) */}
                 <button
                     onClick={handleSubmit}
-                    disabled={rating === 0 || content.trim().length < 10}
+                    disabled={
+                        isSubmitting || rating === 0 || content.trim().length === 0
+                    }
                     className="
             w-full mt-4 p-4 rounded-lg
             bg-primary text-white font-bold
@@ -147,7 +181,7 @@ const ReviewModal = ({
             transition-colors
           "
                 >
-                    완료
+                    {isSubmitting ? '등록 중...' : '완료'}
                 </button>
             </div>
         </>

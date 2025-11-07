@@ -4,9 +4,9 @@ import { api } from './index'; // 1. 우리가 만든 "만능 스마트폰" impo
 import type { LoginRequest, LoginResponse } from '../types/user';
 
 // [로그인 API 함수]
-// (id, pw를 받아서, 성공 시 LoginResponse를 반환)
+// (학번, 이름을 받아서 성공 시 LoginResponse를 반환)
 export const apiLogin = async (data: LoginRequest): Promise<LoginResponse> => {
-    const response = await api.post('/api/auth/login', data);
+    const response = await api.post('/auth/login', data);
 
     // response.data.data
     return response.data.data;
@@ -14,7 +14,7 @@ export const apiLogin = async (data: LoginRequest): Promise<LoginResponse> => {
 
 // [로그아웃 API 함수]
 export const apiLogout = async () => {
-    const response = await api.post('/api/auth/logout');
+    const response = await api.post('/auth/logout');
     return response.data;
 };
 

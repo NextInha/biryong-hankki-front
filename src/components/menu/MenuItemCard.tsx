@@ -8,7 +8,7 @@ interface MenuItemCardProps {
 }
 
 const MenuItemCard = ({ menu, onClick }: MenuItemCardProps) => {
-    const { name, ingredients, price } = menu;
+    const { restaurantName, ingredients, price } = menu;
 
     // ingredients가 빈 문자열("")일 경우를 대비 (라면)
     const ingredientList = ingredients
@@ -19,17 +19,19 @@ const MenuItemCard = ({ menu, onClick }: MenuItemCardProps) => {
         <div
             onClick={onClick}
             className="
+        mb-[13px] last:mb-0
         p-3 min-h-24 rounded-lg shadow-md cursor-pointer
-        flex items-center justify-between gap-2
+        flex items-center justify-between gap-3
         bg-white border border-transparent
-        
         transition-all duration-150 ease-in-out 
         active:scale-[0.98] active:opacity-80
       "
         >
             {/* 메뉴 이름, 가격 */}
-            <div className=" w-[30%]">
-                <h3 className="text-lg font-bold ">{name}</h3>
+            <div className="w-[35%] pl-6 text-left">
+                <p className="text-lg font-bold text-gray-900 whitespace-nowrap">
+                    {restaurantName}
+                </p>
             </div>
 
             <div className="text-center">
@@ -40,7 +42,7 @@ const MenuItemCard = ({ menu, onClick }: MenuItemCardProps) => {
                 ))}
             </div>
 
-            <div className=" w-[30%] text-right">
+            <div className="w-[30%] text-right">
                 <p className="text-xl font-bold text-[#0066B3]">
                     {price.toLocaleString()}원
                 </p>

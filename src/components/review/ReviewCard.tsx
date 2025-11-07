@@ -54,24 +54,30 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
                 </div>
 
                 {/* 태그 (메뉴명, 식사 타입) */}
-                <div className="flex gap-2 mb-2">
-                    <span
-                        className="
-            text-xs font-semibold text-white 
-            bg-primary rounded-full px-2 py-0.5
-          "
-                    >
-                        {review.mealType}
-                    </span>
-                    <span
-                        className="
-            text-xs font-semibold text-primary 
-            bg-blue-100 rounded-full px-2 py-0.5
-          "
-                    >
-                        {review.restaurantName}
-                    </span>
-                </div>
+                {(review.mealType || review.restaurantName) && (
+                    <div className="flex gap-2 mb-2">
+                        {review.mealType && (
+                            <span
+                                className="
+                text-xs font-semibold text-white 
+                bg-primary rounded-full px-2 py-0.5
+              "
+                            >
+                                {review.mealType}
+                            </span>
+                        )}
+                        {review.restaurantName && (
+                            <span
+                                className="
+                text-xs font-semibold text-primary 
+                bg-blue-100 rounded-full px-2 py-0.5
+              "
+                            >
+                                {review.restaurantName}
+                            </span>
+                        )}
+                    </div>
+                )}
 
                 {/* 리뷰 본문 */}
                 <p className="text-sm text-gray-800 leading-snug">

@@ -2,9 +2,12 @@
 import axios from 'axios';
 import { useAuthStore } from '../store/useAuthStore';
 
+const baseURL =
+    import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api';
+
 // 기본 axios 인스턴스
 export const api = axios.create({
-    baseURL: '<https://api.biryong-hankki.com>', //  백엔드 주소
+    baseURL,
 });
 
 // Axios 요청 가로채기

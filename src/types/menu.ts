@@ -1,12 +1,32 @@
 export interface Menu {
     id: string; // UUID는 string 타입입니다.
-    restaurant_id: string; // FK (보통 string이나 number)
-    name: string; // 'title' 대신 'name'
-    ingredients: string; // 'description' 대신 'ingredients'
+    restaurantId: number; // FK → restaurants.id
+    restaurantName: string;
+    name: string;
+    ingredients: string | null;
     price: number;
-    is_available: boolean;
-    average_rating: number; // DECIMAL은 number
-    review_count: number;
-    created_at: string; // TIMESTAMP는 string (ISO 8601 형식)
-    updated_at: string;
+    isAvailable: boolean;
+    averageRating: number;
+    reviewCount: number;
+    createdAt: string; // TIMESTAMP는 string (ISO 8601 형식)
+    updatedAt: string;
+}
+
+export interface MenuDetailRestaurant {
+    id: number;
+    name: string;
+    description: string | null;
+}
+
+export interface MenuDetail {
+    id: string;
+    name: string;
+    ingredients: string | null;
+    price: number;
+    isAvailable: boolean;
+    averageRating: number;
+    reviewCount: number;
+    createdAt: string;
+    updatedAt: string;
+    restaurant: MenuDetailRestaurant;
 }

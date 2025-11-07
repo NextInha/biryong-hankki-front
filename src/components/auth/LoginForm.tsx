@@ -7,8 +7,8 @@ import inhaLogoBg from '../../assets/icons/icon-inhauniv-logo-square.svg';
 interface LoginFormProps {
     studentId: string;
     setStudentId: (value: string) => void;
-    password: string;
-    setPassword: (value: string) => void;
+    name: string;
+    setName: (value: string) => void;
     handleSubmit: (e: React.FormEvent) => void;
     isLoading: boolean;
     errorMsg: string;
@@ -17,8 +17,8 @@ interface LoginFormProps {
 const LoginForm = ({
     studentId,
     setStudentId,
-    password,
-    setPassword,
+    name,
+    setName,
     handleSubmit,
     isLoading,
     errorMsg,
@@ -45,9 +45,15 @@ const LoginForm = ({
 
             <form onSubmit={handleSubmit}>
                 <div className="mb-4">
+                    <label htmlFor="studentId" className="sr-only">
+                        학번
+                    </label>
                     <input
                         type="text"
-                        placeholder="아이디"
+                        id="studentId"
+                        name="studentId"
+                        autoComplete="username"
+                        placeholder="학번"
                         value={studentId} //  상태 연결
                         onChange={(e) => setStudentId(e.target.value)} // 상태 변경 함수 연결
                         disabled={isLoading} // 로딩 중 비활성화
@@ -55,24 +61,35 @@ const LoginForm = ({
                     />
                 </div>
                 <div className="mb-4">
+                    <label htmlFor="name" className="sr-only">
+                        이름
+                    </label>
                     <input
-                        type="password"
-                        placeholder="비밀번호"
-                        value={password} // 상태 연결
-                        onChange={(e) => setPassword(e.target.value)} // 상태 변경 함수 연결
+                        type="text"
+                        id="name"
+                        name="name"
+                        autoComplete="name"
+                        placeholder="이름"
+                        value={name} // 상태 연결
+                        onChange={(e) => setName(e.target.value)} // 상태 변경 함수 연결
                         disabled={isLoading} // 로딩 중 비활성화
                         className="w-full p-3 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                 </div>
 
                 <p className="text-xs text-gray-500 mb-4">
-                    *로그인 아이디는 학교 포털에서 사용하는 학번 또는
-                    사번입니다.
+                    *로그인 학번과 이름은 학교 포털 정보와 동일하게 입력해
+                    주세요.
                 </p>
 
                 <div className="flex items-center mb-12 text-sm text-gray-600">
                     <label className="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" className="w-4 h-4" />
+                        <input
+                            id="rememberLogin"
+                            name="rememberLogin"
+                            type="checkbox"
+                            className="w-4 h-4"
+                        />
                         로그인 상태 유지
                     </label>
                 </div>

@@ -7,10 +7,12 @@ import { AxiosError } from 'axios';
 // API 함수와 에러 타입 import
 import { apiCreateOrder } from '../../api/order';
 import type { ApiError } from '../../types/api';
+import { useAuthStore } from '../../store/useAuthStore';
 
 const PurchaseSummary = () => {
     // store에서 items를 직접 가져옵니다.
     const { items, updateQuantity, removeItem, clearCart } = useCartStore();
+    const token = useAuthStore((state) => state.token);
     const navigate = useNavigate();
 
     const [isLoading, setIsLoading] = useState(false);
@@ -27,6 +29,17 @@ const PurchaseSummary = () => {
 
     // "구매하기" 버튼 클릭 시
     const handlePurchase = async () => {
+        if (!token) {
+            setErrorMsg('로그인이 필요합니다.');
+            navigate('/login');
+            return;
+        }
+
+        if (items.length === 0) {
+            setErrorMsg('장바구니가 비어있습니다.');
+            return;
+        }
+
         setIsLoading(true);
         setErrorMsg('');
 
@@ -43,16 +56,25 @@ const PurchaseSummary = () => {
 
                 switch (errorData.code) {
                     case 'EMPTY_CART':
+                    case 'ORDER_ITEMS_EMPTY':
                         setErrorMsg('장바구니가 비어있습니다.');
                         break;
                     case 'MENU_UNAVAILABLE':
+                    case 'MENU_SOLD_OUT':
                         setErrorMsg('품절된 메뉴가 포함되어 있습니다.');
                         break;
+                    case 'MENU_NOT_FOUND':
+                        setErrorMsg('선택한 메뉴를 찾을 수 없습니다.');
+                        break;
                     case 'UNAUTHORIZED':
+                    case 'INVALID_TOKEN':
                         setErrorMsg('로그인이 필요합니다.');
+                        navigate('/login');
                         break;
                     default:
-                        setErrorMsg('주문 생성에 실패했습니다.');
+                        setErrorMsg(
+                            errorData.message || '주문 생성에 실패했습니다.'
+                        );
                 }
             } else {
                 setErrorMsg('네트워크 오류가 발생했습니다.');
